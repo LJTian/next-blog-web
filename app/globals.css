@@ -1,0 +1,770 @@
+:root {
+  color-scheme: light;
+  --ink: #1d1b18;
+  --muted: #706b63;
+  --paper: #f8f4ec;
+  --paper-deep: #e6dccd;
+  --line: rgba(29, 27, 24, 0.12);
+  --accent: #3d5a6c;
+  --background: #f1eee8;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  min-height: 100%;
+  margin: 0;
+}
+
+body {
+  background: var(--background);
+  color: var(--ink);
+  font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+
+button {
+  border-radius: 0;
+  font: inherit;
+}
+
+.home {
+  min-height: 100vh;
+  overflow-x: clip;
+  overflow-y: auto;
+  background:
+    linear-gradient(120deg, rgba(255, 255, 255, 0.54), rgba(255, 255, 255, 0) 48%),
+    radial-gradient(circle at 50% 110%, rgba(61, 90, 108, 0.16), transparent 34%),
+    repeating-linear-gradient(90deg, rgba(29, 27, 24, 0.018) 0 1px, transparent 1px 7px),
+    var(--background);
+}
+
+.home__stage {
+  position: relative;
+  display: grid;
+  min-height: 100vh;
+  padding: 0;
+  place-items: center;
+}
+
+.home__intro {
+  position: absolute;
+  top: clamp(24px, 5vw, 64px);
+  left: clamp(24px, 5vw, 72px);
+  z-index: 2;
+}
+
+.home__intro p,
+.paper-card p,
+.book-caption p,
+.static-book__page p {
+  margin: 0 0 8px;
+  color: var(--muted);
+  font-size: 0.78rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.home__intro h1 {
+  margin: 0;
+  font-size: clamp(2.4rem, 8vw, 7rem);
+  font-weight: 500;
+  letter-spacing: 0;
+  line-height: 0.9;
+}
+
+.card-field {
+  position: relative;
+  width: min(980px, 100%);
+  height: min(660px, 72vh);
+  cursor: pointer;
+  perspective: 1100px;
+}
+
+.card-field__cards {
+  position: absolute;
+  inset: 0;
+}
+
+.paper-card {
+  position: absolute;
+  width: clamp(180px, 22vw, 260px);
+  min-height: 150px;
+  padding: 22px;
+  border: 1px solid var(--line);
+  background: rgba(248, 244, 236, 0.86);
+  box-shadow: 0 20px 50px rgba(50, 43, 35, 0.12);
+  transform:
+    translate3d(
+      calc((var(--i) - 2) * 92px + var(--px, 0) * 18px),
+      calc(((var(--i) % 2) * 72px) - 40px + var(--py, 0) * 18px),
+      0
+    )
+    rotateX(calc(var(--py, 0) * -5deg))
+    rotateY(calc(var(--px, 0) * 6deg))
+    rotate(calc((var(--i) - 2) * 3deg));
+  transition: box-shadow 500ms ease;
+  animation: paper-settle 900ms cubic-bezier(0.16, 1, 0.3, 1) both, paper-float calc(7s + var(--i) * 400ms) ease-in-out infinite;
+  animation-delay: calc(var(--i) * 90ms), calc(var(--i) * -500ms);
+  transform-origin: 50% 70%;
+}
+
+.paper-card::before {
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(115deg, rgba(255, 255, 255, 0.46), transparent 42%),
+    repeating-linear-gradient(0deg, rgba(29, 27, 24, 0.022) 0 1px, transparent 1px 5px);
+  content: "";
+  pointer-events: none;
+}
+
+.paper-card:hover {
+  box-shadow: 0 28px 70px rgba(50, 43, 35, 0.16);
+}
+
+.paper-card:nth-child(1) {
+  left: 12%;
+  top: 24%;
+}
+
+.paper-card:nth-child(2) {
+  left: 42%;
+  top: 12%;
+}
+
+.paper-card:nth-child(3) {
+  left: 62%;
+  top: 42%;
+}
+
+.paper-card:nth-child(4) {
+  left: 18%;
+  top: 54%;
+}
+
+.paper-card:nth-child(5) {
+  left: 48%;
+  top: 58%;
+}
+
+.paper-card h2 {
+  margin: 0 0 14px;
+  font-size: 1.2rem;
+  font-weight: 520;
+  letter-spacing: 0;
+}
+
+.paper-card span {
+  color: var(--muted);
+  line-height: 1.55;
+}
+
+.paper-card--cool {
+  background: rgba(232, 239, 240, 0.9);
+}
+
+.paper-card--deep {
+  background: rgba(222, 226, 220, 0.9);
+}
+
+.paper-card--warm {
+  background: rgba(244, 232, 216, 0.9);
+}
+
+.assemble-button {
+  position: absolute;
+  right: 4%;
+  bottom: 5%;
+  border: 1px solid rgba(29, 27, 24, 0.2);
+  background: var(--ink);
+  color: var(--paper);
+  padding: 12px 18px;
+  cursor: pointer;
+}
+
+.book-assembly {
+  display: grid;
+  gap: 24px;
+  place-items: center;
+}
+
+.book-assembly__stack {
+  position: relative;
+  width: min(380px, 70vw);
+  height: 260px;
+  perspective: 900px;
+}
+
+.book-assembly__stack span {
+  position: absolute;
+  inset: 20px;
+  border: 1px solid var(--line);
+  background: var(--paper);
+  box-shadow: 0 22px 60px rgba(50, 43, 35, 0.14);
+  animation: bind-page 1200ms cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+.book-assembly__stack span:nth-child(1) {
+  transform: translate(-130px, -42px) rotate(-8deg);
+}
+
+.book-assembly__stack span:nth-child(2) {
+  transform: translate(80px, -56px) rotate(7deg);
+}
+
+.book-assembly__stack span:nth-child(3) {
+  transform: translate(-70px, 78px) rotate(5deg);
+}
+
+.book-assembly__stack span:nth-child(4) {
+  transform: translate(112px, 56px) rotate(-6deg);
+}
+
+.book-assembly__stack span:nth-child(5) {
+  transform: translate(-20px, -8px) rotate(3deg);
+}
+
+.book-assembly p {
+  color: var(--muted);
+  font-size: 0.9rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.book-scene {
+  display: flex;
+  box-sizing: border-box;
+  width: 100%;
+  min-height: 100vh;
+  align-items: center;
+  justify-content: center;
+  padding: clamp(20px, 4vh, 48px) clamp(16px, 4vw, 40px);
+}
+
+.real-book {
+  position: relative;
+  width: min(1520px, calc(100vw - 24px));
+  max-width: 100%;
+  margin: 0 auto;
+  perspective: 2000px; /* 增加透视深度 */
+  transform-style: preserve-3d;
+}
+
+.real-book__spread {
+  position: relative;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  align-items: stretch;
+  width: 100%;
+  min-height: clamp(460px, 78vh, 920px);
+  border-radius: 14px;
+  background: rgba(29, 27, 24, 0.06);
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.65) inset,
+    0 32px 64px rgba(50, 43, 35, 0.12),
+    0 8px 24px rgba(50, 43, 35, 0.06);
+  transform-style: preserve-3d;
+}
+
+/* 书脊效果 */
+.real-book__spread::before {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: calc(50% - 30px);
+  z-index: 5;
+  width: 60px;
+  background: radial-gradient(ellipse at center, rgba(44, 35, 25, 0.22), rgba(44, 35, 25, 0.02) 60%, transparent 85%);
+  content: "";
+  pointer-events: none;
+}
+
+.real-book__page {
+  position: relative;
+  min-width: 0;
+  min-height: 100%;
+  align-self: stretch;
+  border: 0;
+  background:
+    radial-gradient(ellipse 120% 80% at 30% 0%, rgba(255, 255, 255, 0.75), transparent 55%),
+    linear-gradient(90deg, rgba(74, 55, 34, 0.06), transparent 14%, transparent 86%, rgba(74, 55, 34, 0.05)),
+    repeating-linear-gradient(0deg, rgba(86, 72, 53, 0.02) 0 1px, transparent 1px 5px),
+    #faf6ee;
+  box-shadow:
+    inset 0 0 0 1px rgba(29, 27, 24, 0.06),
+    inset 0 0 48px rgba(84, 64, 41, 0.06),
+    inset 0 -26px 32px rgba(89, 71, 50, 0.05);
+  color: var(--ink);
+}
+
+.real-book__page--left {
+  display: grid;
+  align-content: center;
+  border-radius: 12px 0 0 12px;
+  cursor: w-resize;
+  text-align: left;
+}
+
+.real-book__page--right {
+  display: block;
+  border-radius: 0 12px 12px 0;
+  cursor: e-resize;
+  text-align: left;
+  transform-origin: left center;
+}
+
+.real-book__page--left::after,
+.real-book__page--right::after {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 20px;
+  content: "";
+  pointer-events: none;
+  z-index: 2;
+}
+
+.real-book__page--left::after {
+  right: 0;
+  background: linear-gradient(90deg, transparent, rgba(63, 47, 31, 0.12));
+}
+
+.real-book__page--right::after {
+  left: 0;
+  background: linear-gradient(90deg, rgba(63, 47, 31, 0.15), transparent);
+}
+
+/* 边缘厚度模拟：根据 progress 动态调整 */
+.real-book__edge-stack {
+  position: absolute;
+  top: 4px;
+  bottom: 4px;
+  width: 10px;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.real-book__page--left .real-book__edge-stack {
+  left: -8px;
+  border-radius: 4px 0 0 4px;
+  background: repeating-linear-gradient(90deg, #e8e0d5, #e8e0d5 1px, #f5eee4 1px, #f5eee4 2px);
+  box-shadow: -2px 4px 8px rgba(0, 0, 0, 0.1);
+  /* 左侧厚度随进度增加 */
+  transform: scaleX(calc(0.2 + var(--book-progress, 0) * 1.5));
+  transform-origin: right center;
+}
+
+.real-book__page--right .real-book__edge-stack {
+  right: -8px;
+  border-radius: 0 4px 4px 0;
+  background: repeating-linear-gradient(-90deg, #e8e0d5, #e8e0d5 1px, #f5eee4 1px, #f5eee4 2px);
+  box-shadow: 2px 4px 8px rgba(0, 0, 0, 0.1);
+  /* 右侧厚度随进度减少 */
+  transform: scaleX(calc(1.7 - var(--book-progress, 0) * 1.5));
+  transform-origin: left center;
+}
+
+/* 悬停时的边缘“拾取”效果 */
+.real-book__page--left:not(:disabled):hover {
+  transform: rotateY(2deg);
+  transition: transform 0.3s ease;
+}
+
+.real-book__page--right:not(:disabled):hover {
+  transform: rotateY(-2deg);
+  transition: transform 0.3s ease;
+}
+
+.real-book__content {
+  display: grid;
+  align-content: center;
+  gap: clamp(10px, 1.2vw, 16px);
+  min-height: 100%;
+  padding: clamp(36px, 5vw, 72px) clamp(32px, 5vw, 64px);
+}
+
+.real-book__eyebrow {
+  margin: 0 0 6px;
+  color: rgba(78, 70, 61, 0.72);
+  font-size: clamp(0.62rem, 1vw, 0.72rem);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.real-book__content h2 {
+  margin: 0 0 10px;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: clamp(2rem, 4.8vw, 3.75rem);
+  font-weight: 600;
+  letter-spacing: 0;
+  line-height: 1.05;
+}
+
+.real-book__lede {
+  margin: 0 0 12px;
+  max-width: 32ch;
+  color: rgba(67, 59, 50, 0.82);
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: clamp(1rem, 1.35vw, 1.2rem);
+  font-style: italic;
+  line-height: 1.45;
+}
+
+.real-book__list {
+  display: grid;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  gap: 4px;
+}
+
+.real-book__list li {
+  display: grid;
+  gap: 4px;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--line);
+}
+
+.real-book__list li:last-child {
+  border-bottom: 0;
+  padding-bottom: 0;
+}
+
+.real-book__list-title {
+  color: var(--ink);
+  font-size: clamp(0.95rem, 1.15vw, 1.05rem);
+  font-weight: 520;
+  line-height: 1.35;
+}
+
+.real-book__list-meta {
+  color: var(--muted);
+  font-size: 0.82rem;
+  letter-spacing: 0.04em;
+}
+
+.real-book__chips {
+  display: flex;
+  flex-wrap: wrap;
+  margin: 0;
+  padding: 0;
+  gap: 8px;
+  list-style: none;
+}
+
+.real-book__chips li {
+  padding: 6px 12px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.42);
+  color: rgba(67, 59, 50, 0.88);
+  font-size: 0.8rem;
+}
+
+.real-book__body {
+  margin: 0;
+  max-width: 36ch;
+  color: rgba(67, 59, 50, 0.88);
+  font-size: clamp(0.92rem, 1.2vw, 1.05rem);
+  line-height: 1.62;
+}
+
+.real-book__action {
+  display: grid;
+  gap: 16px;
+  margin: 0;
+}
+
+.real-book__action > span:first-of-type {
+  max-width: 36ch;
+  color: rgba(67, 59, 50, 0.88);
+  font-size: clamp(0.92rem, 1.2vw, 1.05rem);
+  line-height: 1.62;
+}
+
+.real-book__action-cta {
+  color: var(--accent);
+  font-size: 0.76rem;
+  font-style: normal;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.real-book__content--muted {
+  opacity: 0.48;
+}
+
+.real-book__gutter {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 50%;
+  z-index: 10;
+  width: 2px;
+  background: rgba(0, 0, 0, 0.1);
+  pointer-events: none;
+}
+
+.real-book__gutter::after {
+  position: absolute;
+  inset: 0 -15px;
+  background: linear-gradient(90deg, rgba(0,0,0,0.06), transparent 50%, rgba(0,0,0,0.06));
+  content: "";
+}
+
+/* 翻页叠层核心样式 */
+.real-book__turn-sheet {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  z-index: 20;
+  width: 50%;
+  pointer-events: none;
+  opacity: 0;
+  transform-style: preserve-3d;
+  will-change: transform, filter;
+}
+
+.real-book__turn-sheet--next {
+  right: 0;
+  transform-origin: left center;
+}
+
+.real-book__turn-sheet--previous {
+  left: 0;
+  transform-origin: right center;
+}
+
+.real-book__turn-sheet--active {
+  opacity: 1;
+}
+
+.real-book__turn-face {
+  position: absolute;
+  inset: 0;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  background: #faf6ee;
+  box-shadow: inset 0 0 80px rgba(0, 0, 0, 0.05);
+  overflow: hidden;
+}
+
+.real-book__turn-face::after {
+  position: absolute;
+  inset: 0;
+  background: rgba(255, 255, 255, 0.05);
+  content: "";
+  pointer-events: none;
+}
+
+.real-book__turn-face--front {
+  transform: rotateY(0deg);
+  border-radius: 0 12px 12px 0;
+}
+
+.real-book__turn-face--back {
+  transform: rotateY(180deg);
+  border-radius: 12px 0 0 12px;
+}
+
+/* 翻页光影渲染 */
+.real-book__page-shine {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 5;
+}
+
+.real-book__turn-face--front .real-book__page-shine {
+  background: linear-gradient(90deg, rgba(255, 255, 255, 0) 50%, rgba(0, 0, 0, 0.06) 100%);
+}
+
+.real-book__turn-face--back .real-book__page-shine {
+  background: linear-gradient(-90deg, rgba(255, 255, 255, 0) 50%, rgba(0, 0, 0, 0.06) 100%);
+}
+
+/* 动态投影：翻页时落在底下页面的阴影 */
+.real-book__turn-shadow {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: rgba(0, 0, 0, 0.18);
+  filter: blur(30px);
+  opacity: 0;
+}
+
+/* 动画定义：向后翻 (Next) */
+.real-book__turn-sheet--next.real-book__turn-sheet--active {
+  animation: real-page-turn-next 820ms cubic-bezier(0.25, 1, 0.5, 1) both;
+}
+
+.real-book__turn-sheet--next.real-book__turn-sheet--active .real-book__turn-shadow {
+  animation: shadow-next 820ms ease-in-out both;
+}
+
+@keyframes real-page-turn-next {
+  0% {
+    transform: rotateY(0deg) skewY(0deg) scale(1);
+    clip-path: inset(0 0 0 0);
+  }
+  40% {
+    transform: rotateY(-75deg) skewY(-12deg) scale(1.04) translateZ(80px);
+    /* 贝塞尔曲线：底部边缘内凹 */
+    clip-path: path("M 0 0 L 100% 0 L 100% 90% Q 50% 100% 0 90% Z");
+  }
+  100% {
+    transform: rotateY(-180deg) skewY(0deg) scale(1);
+    clip-path: inset(0 0 0 0);
+  }
+}
+
+@keyframes shadow-next {
+  0%, 100% { opacity: 0; transform: translateX(0); }
+  40% { opacity: 0.55; transform: translateX(-35%) scaleX(0.4); }
+}
+
+/* 动画定义：向前翻 (Prev) */
+.real-book__turn-sheet--previous.real-book__turn-sheet--active {
+  animation: real-page-turn-prev 820ms cubic-bezier(0.25, 1, 0.5, 1) both;
+}
+
+.real-book__turn-sheet--previous.real-book__turn-sheet--active .real-book__turn-shadow {
+  animation: shadow-prev 820ms ease-in-out both;
+}
+
+@keyframes real-page-turn-prev {
+  0% {
+    transform: rotateY(0deg) skewY(0deg) scale(1);
+    clip-path: inset(0 0 0 0);
+  }
+  40% {
+    transform: rotateY(75deg) skewY(12deg) scale(1.04) translateZ(80px);
+    clip-path: path("M 0 0 L 100% 0 L 100% 90% Q 50% 100% 0 90% Z");
+  }
+  100% {
+    transform: rotateY(180deg) skewY(0deg) scale(1);
+    clip-path: inset(0 0 0 0);
+  }
+}
+
+@keyframes shadow-prev {
+  0%, 100% { opacity: 0; transform: translateX(0); }
+  40% { opacity: 0.55; transform: translateX(35%) scaleX(0.4); }
+}
+
+@keyframes bind-page {
+  to {
+    transform: translate(0, 0) rotate(0deg);
+  }
+}
+
+@keyframes paper-settle {
+  from {
+    opacity: 0;
+    transform: translate3d(0, -38vh, 160px) rotateX(24deg) rotateZ(calc((var(--i) - 2) * 14deg));
+  }
+}
+
+@keyframes paper-float {
+  0%,
+  100% {
+    margin-top: 0;
+  }
+
+  50% {
+    margin-top: -5px;
+  }
+}
+
+@media (max-width: 760px) {
+  .home__stage {
+    align-items: end;
+    padding-bottom: 36px;
+  }
+
+  .card-field {
+    height: 68vh;
+  }
+
+  .paper-card {
+    width: min(78vw, 280px);
+    min-height: 128px;
+  }
+
+  .paper-card:nth-child(1) {
+    left: 2%;
+    top: 20%;
+  }
+
+  .paper-card:nth-child(2) {
+    left: 18%;
+    top: 34%;
+  }
+
+  .paper-card:nth-child(3) {
+    left: 8%;
+    top: 49%;
+  }
+
+  .paper-card:nth-child(4) {
+    left: 22%;
+    top: 62%;
+  }
+
+  .paper-card:nth-child(5) {
+    left: 5%;
+    top: 76%;
+  }
+
+  .real-book {
+    width: 100%;
+    margin-top: 12px;
+  }
+
+  .real-book__spread {
+    min-height: auto;
+    grid-template-columns: 1fr;
+    gap: 12px;
+    padding: 0;
+    background: transparent;
+    box-shadow: none;
+  }
+
+  .real-book__gutter {
+    display: none;
+  }
+
+  .real-book__page {
+    min-height: min(52vh, 440px);
+    border-radius: 12px;
+    box-shadow:
+      inset 0 0 0 1px rgba(29, 27, 24, 0.06),
+      0 20px 48px rgba(50, 43, 35, 0.1);
+  }
+
+  .real-book__page--left,
+  .real-book__page--right {
+    border-radius: 12px;
+  }
+
+  .real-book__turn-sheet {
+    width: 100%;
+    left: 0;
+    right: 0;
+    border-radius: 12px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+    animation-duration: 1ms !important;
+    transition-duration: 1ms !important;
+  }
+}
