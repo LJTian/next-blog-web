@@ -1,8 +1,8 @@
-const notionBlogUrl =
-  "https://tianlj.notion.site/LJTian-Blog-ce8a73f53641460cb4ba5f92596ae14b";
-const notionEmbedUrl = process.env.NEXT_PUBLIC_NOTION_EMBED_URL ?? notionBlogUrl;
+import { getNotionEmbedConfig, notionBlogUrl } from "../lib/notionConfig";
 
 export default function Home() {
+  const notionConfig = getNotionEmbedConfig();
+
   return (
     <main className="site-shell">
       <header className="topbar">
@@ -15,13 +15,13 @@ export default function Home() {
           target="_blank"
           rel="noreferrer"
         >
-          Open in Notion
+          在 Notion 打开
         </a>
       </header>
       <section className="embed-frame" aria-label="LJTian Notion blog">
         <iframe
           title="LJTian Blog on Notion"
-          src={notionEmbedUrl}
+          src={notionConfig.embedUrl}
           loading="eager"
           referrerPolicy="no-referrer-when-downgrade"
           allowFullScreen

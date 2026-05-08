@@ -28,4 +28,8 @@ Import this repository into Vercel. Vercel detects Next.js automatically and can
 
 ## Notion embed URL
 
-The app uses the public Notion URL by default. If Notion blocks direct iframe loading, open the published Notion page, choose `Share` -> `Publish` -> `Embed this page`, copy the iframe code, and set `NEXT_PUBLIC_NOTION_EMBED_URL` in Vercel to the iframe `src` value.
+Notion public pages can reject direct iframe loading with `x-frame-options: SAMEORIGIN`. This app uses Notion's embed URL by default:
+
+`https://tianlj.notion.site/ebd//ce8a73f53641460cb4ba5f92596ae14b`
+
+To override it later, set `NEXT_PUBLIC_NOTION_EMBED_URL` in Vercel to a different iframe `src` value.
