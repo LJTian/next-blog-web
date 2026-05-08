@@ -1,5 +1,6 @@
 const notionBlogUrl =
   "https://tianlj.notion.site/LJTian-Blog-ce8a73f53641460cb4ba5f92596ae14b";
+const notionEmbedUrl = process.env.NEXT_PUBLIC_NOTION_EMBED_URL ?? notionBlogUrl;
 
 export default function Home() {
   return (
@@ -20,7 +21,7 @@ export default function Home() {
       <section className="embed-frame" aria-label="LJTian Notion blog">
         <iframe
           title="LJTian Blog on Notion"
-          src={notionBlogUrl}
+          src={notionEmbedUrl}
           loading="eager"
           referrerPolicy="no-referrer-when-downgrade"
           allowFullScreen

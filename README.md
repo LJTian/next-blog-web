@@ -25,3 +25,7 @@ Import this repository into Vercel. Vercel detects Next.js automatically and can
 - Build Command: `npm run build`
 - Output Directory: `.next`
 - Install Command: `npm install`
+
+## Notion embed URL
+
+The app uses the public Notion URL by default. If Notion blocks direct iframe loading, open the published Notion page, choose `Share` -> `Publish` -> `Embed this page`, copy the iframe code, and set `NEXT_PUBLIC_NOTION_EMBED_URL` in Vercel to the iframe `src` value.
