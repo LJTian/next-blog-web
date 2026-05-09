@@ -1,5 +1,10 @@
 /** @type {import('next').NextConfig} */
+/** 局域网 IP 访问 dev（如 http://10.x.x.x:3000）时避免 /_next 跨域告警；逗号或空格分隔多个 hostname */
+const nextDevAllowedOrigins =
+  process.env.NEXT_DEV_ALLOWED_ORIGINS?.split(/[\s,]+/).filter(Boolean) ?? [];
+
 const nextConfig = {
+  ...(nextDevAllowedOrigins.length ? { allowedDevOrigins: nextDevAllowedOrigins } : {}),
   async redirects() {
     return [
       {

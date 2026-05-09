@@ -5,6 +5,7 @@ import Prism from "prismjs";
 import { useEffect, useMemo } from "react";
 
 import "@/components/notion-prism-languages";
+import { notionClientWarn } from "@/lib/notionLog";
 
 /** 避免父组件每次传入新对象引用时反复触发高亮（可能与其他 React 更新冲突） */
 function recordMapFingerprint(map: ExtendedRecordMap): string {
@@ -36,7 +37,7 @@ export function NotionPrismRefresh({
         try {
           Prism.highlightElement(el);
         } catch (e) {
-          console.warn("[NotionPrismRefresh] highlight failed", e);
+          notionClientWarn("[NotionPrismRefresh] highlight failed", e);
         }
       });
     };

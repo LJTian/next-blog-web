@@ -2,15 +2,11 @@ import type { Metadata } from "next";
 import { notFound, redirect } from "next/navigation";
 
 import { BlogHomeFab } from "@/components/BlogHomeFab";
-import { BlogProfileHero } from "@/components/BlogProfileHero";
-import { NotionBlogBody } from "@/components/NotionBlogBody";
-import { BlogPostTocLayout } from "@/components/BlogPostTocLayout";
+import {
+  BlogNotionRecordPageView,
+} from "@/components/BlogPostPageView";
 import { fetchNotionPageRecordMap } from "@/lib/fetchNotionRecordMap";
 import { getNotionPageHeroAssets } from "@/lib/notionPageHero";
-import {
-  extractNotionLeadParagraph,
-  recordMapWithoutTopLevelBlock,
-} from "@/lib/notionLeadParagraph";
 import {
   NOTION_PAGE_ID_HEX32,
   normalizeNotionPageId,
@@ -18,7 +14,6 @@ import {
 } from "@/lib/notionPageId";
 import { getNotionPageIdToBlogHref } from "@/lib/notionPageLinks";
 import { getBlogFabNavCategories } from "@/lib/siteCategories";
-import { getNotionTocFromRecordMap } from "@/lib/notionToc";
 
 /**
  * 已映射 ID → 301 到 `/blog/{slug}`；未映射但可公开拉取的 Notion 页 → 直接渲染（分类下的子页等）。
@@ -101,53 +96,15 @@ export default async function NotionPageIdRoute({
     notFound();
   }
 
-  const notionHero = getNotionPageHeroAssets(recordMap, pageId);
-  const pageUrlByNotionId = getNotionPageIdToBlogHref();
-  const notionLead = extractNotionLeadParagraph(recordMap, pageId);
-  const recordMapForBody = notionLead
-    ? recordMapWithoutTopLevelBlock(recordMap, pageId, notionLead.blockKey)
-    : recordMap;
-
-  const displayTitle = notionHero?.title ?? "文章";
-  const canonicalPath = `/${norm}`;
-  const showPostHeader = Boolean(notionLead);
-
-  const tocItems = getNotionTocFromRecordMap(recordMapForBody, pageId);
   const fabCategories = getBlogFabNavCategories();
 
   return (
     <div className="blog-layout-root tb-site" suppressHydrationWarning>
-      <div className="blog-post-page">
-        <BlogProfileHero
-          coverUrl={notionHero?.coverUrl}
-          iconUrl={notionHero?.iconUrl}
-          iconEmoji={notionHero?.iconEmoji}
-          title={notionHero?.title ?? displayTitle}
-          headingTitle={displayTitle}
-        />
-        <BlogPostTocLayout tocItems={tocItems}>
-          <main className="blog-main blog-main-wide">
-            <article
-              className={`post-article${showPostHeader ? "" : " post-article--compact-top"}`}
-            >
-              {showPostHeader ? (
-                <header className="post-header">
-                  {notionLead ? (
-                    <p className="post-lead-notion">{notionLead.plainText}</p>
-                  ) : null}
-                </header>
-              ) : null}
-              <NotionBlogBody
-                recordMap={recordMapForBody}
-                pageUrlByNotionId={pageUrlByNotionId}
-                rootNotionPageId={pageId}
-                blogSlug={norm}
-                canonicalPath={canonicalPath}
-              />
-            </article>
-          </main>
-        </BlogPostTocLayout>
-      </div>
+      <BlogNotionRecordPageView
+        pageId={pageId}
+        norm={norm}
+        recordMap={recordMap}
+      />
       <BlogHomeFab categories={fabCategories} />
     </div>
   );

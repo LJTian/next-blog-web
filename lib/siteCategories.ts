@@ -3,18 +3,15 @@ import "server-only";
 import type { BlogFabNavItem } from "@/lib/blogFabNavTypes";
 import {
   extractNotionPageIdHex32,
-  normalizeNotionPageId,
   toDashedNotionPageId,
 } from "@/lib/notionPageId";
 
 export type { BlogFabNavItem } from "@/lib/blogFabNavTypes";
 
 /**
- * 画廊「分类」数据库中每一行对应的 Notion 页面。
- * 填好 `notionPageId` 后，站内链接与 `/{pageId}` 重定向会指向 `/blog/{slug}`。
- *
- * 请把下面 8 条的 `notionPageId` 换成你在 Notion 里打开该分类页 →「复制链接」中的 32 位 ID
- *（带短横线亦可）。`slug` / `title` 可按站点需要修改，避免与已有文章 slug 冲突。
+ * 画廊「分类」数据库中每一行对应的 Notion 页面（数据见下方 `SITE_CATEGORIES` 数组）。
+ * 填好 `notionPageId` 后，站内链接与 `/{pageId}` 重定向会指向 `/blog/{slug}`（slug 含中文时将 URL 编码）。
+ * 增删条目时请同步检查：与 `content/posts` 的 slug 冲突、`getBlogFabNavCategories` 与预渲染列表。
  */
 export type SiteCategory = {
   /** 本站路径 `/blog/{slug}` */
@@ -119,7 +116,7 @@ export function getCategoryNotionPageIdToHref(): Record<string, string> {
   for (const c of getConfiguredSiteCategories()) {
     const hex = extractNotionPageIdHex32(c.notionPageId);
     if (!hex) continue;
-    out[hex] = `/blog/${c.slug}`;
+    out[hex] = `/blog/${encodeURIComponent(c.slug.trim())}`;
   }
   return out;
 }
@@ -128,6 +125,6 @@ export function getCategoryNotionPageIdToHref(): Record<string, string> {
 export function getBlogFabNavCategories(): BlogFabNavItem[] {
   return getConfiguredSiteCategories().map((c) => ({
     title: c.title,
-    href: `/blog/${c.slug}`,
+    href: `/blog/${encodeURIComponent(c.slug.trim())}`,
   }));
 }

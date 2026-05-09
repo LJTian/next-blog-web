@@ -3,11 +3,36 @@ import { cache } from "react";
 
 import { applyNotionCollectionTitleOverrides } from "./notionCollectionTitleOverrides";
 import { getNotionCompatApi } from "./notionCompat";
+import { notionDevWarn } from "./notionLog";
 import { getNotionPublicApi } from "./notionPublicApi";
 
 export type NotionRecordMapSource =
   | "public-notion-client"
   | "official-compat";
+
+function errnoFromUnknown(err: unknown): string | undefined {
+  let cur: unknown = err;
+  for (let i = 0; i < 8 && cur != null; i++) {
+    if (typeof cur !== "object") break;
+    const o = cur as { code?: unknown; cause?: unknown };
+    if (typeof o.code === "string") return o.code;
+    cur = o.cause;
+  }
+  return undefined;
+}
+
+function notionPublicApiFailHint(err: unknown): string {
+  const code = errnoFromUnknown(err);
+  if (
+    code === "ECONNREFUSED" ||
+    code === "ENOTFOUND" ||
+    code === "ETIMEDOUT" ||
+    code === "EAI_AGAIN"
+  ) {
+    return " 网络异常（无法连接 www.notion.so）：请在 .env.local 配置 NOTION_API_KEY 以走官方 API 兜底，或配置 NOTION_API_BASE_URL 指向可访问的匿名接口代理。";
+  }
+  return "";
+}
 
 /**
  * 与 [nextjs-notion-starter-kit](https://github.com/transitive-bullshit/nextjs-notion-starter-kit) 一致：
@@ -27,8 +52,8 @@ async function fetchNotionPageRecordMapUncached(pageId: string): Promise<{
     applyNotionCollectionTitleOverrides(recordMap);
     return { recordMap, source: "public-notion-client" };
   } catch (e) {
-    console.warn(
-      "[notion] public NotionAPI.getPage failed (页面是否已「发布到网页」？):",
+    notionDevWarn(
+      `[notion] public NotionAPI.getPage failed (页面是否已「发布到网页」？).${notionPublicApiFailHint(e)}`,
       e,
     );
   }

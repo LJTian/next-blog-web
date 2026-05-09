@@ -27,7 +27,7 @@ export function getNotionPageIdToBlogHref(cwd?: string): Record<string, string> 
     const eff = slug || fileSlug;
     const isPortal =
       fileSlug === BLOG_PORTAL_SLUG || eff === BLOG_PORTAL_SLUG;
-    map[norm] = isPortal ? "/blog" : `/blog/${eff}`;
+    map[norm] = isPortal ? "/blog" : `/blog/${encodeURIComponent(eff)}`;
   }
   return map;
 }

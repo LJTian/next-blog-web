@@ -5,6 +5,21 @@ import { fileURLToPath } from "url";
 const NOTION_API_KEY = process.env.NOTION_API_KEY;
 const NOTION_VERSION = process.env.NOTION_VERSION ?? "2026-03-11";
 
+const NOTION_LOG_QUIET =
+  process.env.NOTION_LOG === "quiet" ||
+  process.env.NOTION_LOG === "0" ||
+  process.env.NOTION_LOG === "false";
+
+function syncLog(...args) {
+  if (NOTION_LOG_QUIET) return;
+  console.log(...args);
+}
+
+function syncWarn(...args) {
+  if (NOTION_LOG_QUIET) return;
+  console.warn(...args);
+}
+
 /** Phase 1 fallback when NOTION_POSTS_DATA_SOURCE_ID is unset */
 const STATIC_POSTS = [
   {
@@ -124,11 +139,11 @@ async function fetchFullPageMarkdown(rootPageId) {
     try {
       sub = await fetchMarkdownFragment(bid);
     } catch (e) {
-      console.warn(`Skipping markdown subtree ${bid}: ${e.message}`);
+      syncWarn(`Skipping markdown subtree ${bid}: ${e.message}`);
       continue;
     }
     if (!sub) {
-      console.warn(`Skipping inaccessible or missing block/page ${bid}`);
+      syncWarn(`Skipping inaccessible or missing block/page ${bid}`);
       continue;
     }
     if (sub.markdown) {
@@ -206,10 +221,10 @@ async function queryPublishedPosts(dataSourceId, env = process.env) {
 async function resolvePosts() {
   const dsId = process.env.NOTION_POSTS_DATA_SOURCE_ID?.trim();
   if (dsId) {
-    console.log("Using Notion data source:", dsId);
+    syncLog("Using Notion data source:", dsId);
     return queryPublishedPosts(dsId);
   }
-  console.log("Using static posts list (set NOTION_POSTS_DATA_SOURCE_ID for DB sync).");
+  syncLog("Using static posts list (set NOTION_POSTS_DATA_SOURCE_ID for DB sync).");
   return STATIC_POSTS;
 }
 
@@ -261,10 +276,10 @@ async function main() {
     const fileContent = buildFrontmatter(post) + markdownBody;
     const filePath = path.join(outDir, `${post.slug}.md`);
     await fs.writeFile(filePath, fileContent, "utf8");
-    console.log("Wrote", path.relative(process.cwd(), filePath));
+    syncLog("Wrote", path.relative(process.cwd(), filePath));
   }
 
-  console.log("Notion sync done.");
+  syncLog("Notion sync done.");
 }
 
 const isDirectRun =

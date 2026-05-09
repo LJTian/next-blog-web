@@ -10,7 +10,8 @@
     "sync:notion": "node scripts/sync-notion.mjs",
     "dev": "next dev",
     "dev:clean": "rm -rf .next && next dev",
-    "build": "npm run sync:notion && next build",
+    "build": "next build",
+    "build:sync": "npm run sync:notion && next build",
     "start": "next start",
     "test": "node tests/run.mjs",
     "lint": "tsc --noEmit"
