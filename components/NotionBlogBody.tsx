@@ -34,8 +34,13 @@ type Props = {
   pageUrlByNotionId: Record<string, string>;
   /** 当前渲染的根页面 ID（dashed 或 raw），用于面包屑等指向「本文」 */
   rootNotionPageId?: string | null;
-  /** 当前文章 slug，与 root 组合成 canonical 路径 */
+  /** 当前文章 slug，与 root 组合成 canonical 路径 `/blog/{slug}` */
   blogSlug: string;
+  /**
+   * 未入库的 Notion 子页（仅能通过 `/{32hex}` 打开）时传入本站路径，例如 `/abc...`，
+   * 用于「指向当前页」的内链；与 `blogSlug` 二选一生效时以此为准。
+   */
+  canonicalPath?: string | null;
 };
 
 export function NotionBlogBody({
@@ -43,22 +48,27 @@ export function NotionBlogBody({
   pageUrlByNotionId,
   rootNotionPageId,
   blogSlug,
+  canonicalPath,
 }: Props) {
   const mapPageUrl = useMemo(() => {
     const rootNorm = rootNotionPageId?.trim()
       ? normalizeNotionPageId(rootNotionPageId.trim())
       : "";
-    const selfHref = `/blog/${blogSlug}`;
+    const trimmedPath = canonicalPath?.trim();
+    const selfHref =
+      trimmedPath && trimmedPath.startsWith("/")
+        ? trimmedPath
+        : `/blog/${blogSlug}`;
     return (pageId: string) => {
       const norm = normalizeNotionPageId(pageId);
       if (!norm) return selfHref;
       if (rootNorm && norm === rootNorm) return selfHref;
       const mapped = pageUrlByNotionId[norm];
       if (mapped) return mapped;
-      // 与 notion-utils 默认一致；已知 slug 由 app/[pageId] 重定向，未知则 404
+      // 未在站点映射中的页面：由 app/[pageId] 直接渲染 Notion 内容
       return `/${norm}`;
     };
-  }, [pageUrlByNotionId, rootNotionPageId, blogSlug]);
+  }, [pageUrlByNotionId, rootNotionPageId, blogSlug, canonicalPath]);
 
   return (
     <div className="notion-blog-root notion-blog-themed">

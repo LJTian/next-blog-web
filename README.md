@@ -41,6 +41,28 @@
 
 查询结果中每一行对应一篇 **页面**：使用该页的 `id` 调用 Markdown 接口。若 slug 为空，会用标题生成 slug 并带上 id 前缀以免冲突。
 
+## 分类（画廊数据库）
+
+首页/文章里嵌入的 **分类** 画廊中，每个卡片对应一个 Notion **页面**。在 [`lib/siteCategories.ts`](lib/siteCategories.ts) 中维护最多 8 条（可按需增删）：
+
+| 字段 | 说明 |
+|------|------|
+| `slug` | 本站地址 `/blog/{slug}`，勿与 `content/posts` 里已有文章 slug 重复 |
+| `title` | 页面标题（元数据、Hero） |
+| `notionPageId` | 该分类页的 ID：可填标准 UUID、纯 32 位 hex，或直接粘贴 Notion 链接里 `标题-xxxxxxxx...` 整段（会自动取末尾 32 位 hex） |
+| `notionLabel` | 可选；与索引库「分类」属性取值一致时便于日后按属性筛文章 |
+
+填好 `notionPageId` 后：
+
+- `/{pageId}` 与正文内链会解析到对应的 `/blog/{slug}`；
+- 分类页由 **Notion 实时渲染**，无需再为每个分类写 `content/posts/*.md`。
+
+未填写 ID 的条目不参与预渲染与映射，直至补全。
+
+### 分类下的子页（第三级链接）
+
+未写入 `content/posts`、也未在 `siteCategories` 中的 **Notion 子页面**（例如分类页里的「云原生学习路线」），正文内链会落到 `/{32位页面ID}`。此前未映射会直接 404；现在会在该路径 **直接拉取并渲染** 对应公开 Notion 页（与文章页同一套 Hero + 正文）。若页面未发布到网页或拉取失败，仍会 404。若希望使用固定短链 `/blog/xxx`，请为该页补一篇带 `page_id` 的 Markdown 或将其加入分类映射。
+
 ## 运行环境
 
 本项目要求 **Node.js 22+**（仓库根目录已有 [`.nvmrc`](.nvmrc) / [`.node-version`](.node-version)，可用 `nvm use`、`fnm use` 等对齐）。Next.js 15 与此版本兼容；本地执行 `npm run dev` / `npm run build` 前请先切换到 22。在 Vercel 项目 **Settings → General → Node.js Version** 中请选择 **22.x**。
