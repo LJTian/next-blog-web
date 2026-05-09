@@ -10,8 +10,10 @@ import type { ExtendedRecordMap } from "notion-types";
 import { NotionPrismRefresh } from "@/components/NotionPrismRefresh";
 import { normalizeNotionPageId } from "@/lib/notionPageId";
 
-const Code = dynamic(() =>
-  import("react-notion-x/third-party/code").then((m) => m.Code),
+/* Prism 在 SSR 与浏览器中对 className 顺序/高亮结果不一致 → 水合报错；仅客户端渲染 Code */
+const Code = dynamic(
+  () => import("react-notion-x/third-party/code").then((m) => m.Code),
+  { ssr: false },
 );
 const Collection = dynamic(() =>
   import("react-notion-x/third-party/collection").then((m) => m.Collection),

@@ -1,5 +1,14 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  async redirects() {
+    return [
+      {
+        source: "/blog/ljtian-blog",
+        destination: "/blog",
+        permanent: true,
+      },
+    ];
+  },
   /** 关闭 Segment Explorer，避免 dev 下 “SegmentViewNode … Client Manifest” 已知 bundler 报错 */
   experimental: {
     devtoolSegmentExplorer: false,

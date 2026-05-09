@@ -1,5 +1,6 @@
 import "server-only";
 
+import { BLOG_PORTAL_SLUG } from "@/lib/blogPortal";
 import {
   normalizeNotionPageId,
   NOTION_PAGE_ID_HEX32,
@@ -23,7 +24,10 @@ export function getNotionPageIdToBlogHref(cwd?: string): Record<string, string> 
     const norm = normalizeNotionPageId(raw);
     if (!NOTION_PAGE_ID_HEX32.test(norm)) continue;
     const slug = typeof data.slug === "string" ? data.slug.trim() : "";
-    map[norm] = `/blog/${slug || fileSlug}`;
+    const eff = slug || fileSlug;
+    const isPortal =
+      fileSlug === BLOG_PORTAL_SLUG || eff === BLOG_PORTAL_SLUG;
+    map[norm] = isPortal ? "/blog" : `/blog/${eff}`;
   }
   return map;
 }

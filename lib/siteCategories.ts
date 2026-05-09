@@ -1,10 +1,13 @@
 import "server-only";
 
+import type { BlogFabNavItem } from "@/lib/blogFabNavTypes";
 import {
   extractNotionPageIdHex32,
   normalizeNotionPageId,
   toDashedNotionPageId,
 } from "@/lib/notionPageId";
+
+export type { BlogFabNavItem } from "@/lib/blogFabNavTypes";
 
 /**
  * 画廊「分类」数据库中每一行对应的 Notion 页面。
@@ -87,11 +90,13 @@ export function getConfiguredSiteCategories(): SiteCategory[] {
 }
 
 export function getSiteCategoryBySlug(slug: string): SiteCategory | null {
-  const t = slug.trim();
+  const t = (slug ?? "").trim().normalize("NFC");
   if (!t) return null;
   return (
-    SITE_CATEGORIES.find((c) => c.slug === t && isConfiguredId(c.notionPageId)) ??
-    null
+    SITE_CATEGORIES.find((c) => {
+      const cs = c.slug.trim().normalize("NFC");
+      return cs === t && isConfiguredId(c.notionPageId);
+    }) ?? null
   );
 }
 
@@ -117,4 +122,12 @@ export function getCategoryNotionPageIdToHref(): Record<string, string> {
     out[hex] = `/blog/${c.slug}`;
   }
   return out;
+}
+
+/** 悬浮菜单中的分类项（已配置 Notion ID 的站点分类） */
+export function getBlogFabNavCategories(): BlogFabNavItem[] {
+  return getConfiguredSiteCategories().map((c) => ({
+    title: c.title,
+    href: `/blog/${c.slug}`,
+  }));
 }

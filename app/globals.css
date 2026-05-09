@@ -83,16 +83,16 @@ a {
 /* ——— 博客布局（无顶栏/页脚时的根容器） ——— */
 .blog-layout-root {
   min-height: 100vh;
-  /* 整体放大 50%（= 缩放到 150%）；含 px/rem、Notion 区块 */
-  zoom: 1.5;
+  /* 在原先 150% 基础上整体 ×0.9 ≈ 135%；含 px/rem、Notion 区块 */
+  zoom: 1.35;
 }
 
 /* 部分浏览器对 zoom 支持不佳时用 transform 兜底 */
 @supports not (zoom: 1) {
   .blog-layout-root {
-    transform: scale(1.5);
+    transform: scale(1.35);
     transform-origin: top center;
-    width: calc(100% / 1.5);
+    width: calc(100% / 1.35);
     max-width: none;
     margin-left: auto;
     margin-right: auto;
@@ -206,6 +206,75 @@ a {
   box-sizing: border-box;
 }
 
+/* ——— 文章页气质：transitivebullsh.it / Notion 公开长文（浅底、链接下划线、标题节奏） ——— */
+.blog-post-page {
+  background-color: #fafafa;
+}
+
+.blog-post-page .notion-blog-themed {
+  font-size: 0.97rem;
+  line-height: 1.66;
+  letter-spacing: -0.002em;
+}
+
+/* Notion 式链接：细下划线 + hover 变色（参考 starter / 公开页） */
+.blog-post-page .notion-blog-themed .notion-link {
+  border-bottom: 0.065em solid rgba(55, 53, 47, 0.38);
+  transition:
+    border-color 0.12s ease,
+    color 0.12s ease;
+}
+
+.blog-post-page .notion-blog-themed .notion-link:hover {
+  border-bottom-color: var(--accent);
+  color: var(--accent-hover);
+}
+
+/* react-notion-x：Notion H1→.notion-h1（实际 <h2>）、H2→.notion-h2… */
+.blog-post-page .notion-blog-themed .notion-h.notion-h1 {
+  margin-top: 2.05rem;
+  margin-bottom: 0.15rem;
+}
+
+.blog-post-page .notion-blog-themed .notion-h.notion-h2 {
+  margin-top: 1.55rem;
+  margin-bottom: 0.12rem;
+}
+
+.blog-post-page .notion-blog-themed .notion-h.notion-h3 {
+  margin-top: 1.25rem;
+  margin-bottom: 0.08rem;
+}
+
+.blog-post-page .notion-blog-themed .notion-h.notion-h4 {
+  margin-top: 1.05rem;
+  margin-bottom: 0.06rem;
+}
+
+.blog-post-page .notion-blog-themed .notion-h.notion-h1 .notion-h-title {
+  font-size: clamp(1.28rem, 2.85vw, 1.58rem);
+  font-weight: 650;
+}
+
+.blog-post-page .notion-blog-themed .notion-h.notion-h2 .notion-h-title {
+  font-size: clamp(1.14rem, 2.35vw, 1.28rem);
+  font-weight: 650;
+}
+
+.blog-post-page .notion-blog-themed .notion-text {
+  margin-top: 0.62em;
+  margin-bottom: 0.62em;
+}
+
+.blog-post-page .notion-blog-themed .notion-text:first-child {
+  margin-top: 0;
+}
+
+.blog-post-page .notion-blog-themed ul.notion-list {
+  margin-top: 0.35em;
+  margin-bottom: 0.55em;
+}
+
 /* ——— 单篇文章页：贴近 TB / Notion 博文（宽封面 + 窄正文栏） ——— */
 .blog-post-page .blog-profile-hero {
   max-width: min(96vw, 58rem);
@@ -241,6 +310,402 @@ a {
   max-width: min(94vw, 52rem);
   /* 头图以下主内容（导语、正文、数据库卡片等）整体 75% */
   zoom: 0.75;
+}
+
+/* ——— 文章页：左侧 sticky 目录 + 主栏（中间列宽度与无目录时一致，目录落在左留白内不挤正文） ——— */
+.blog-post-page .blog-post-toc-layout--with-toc {
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, min(94vw, 52rem)) minmax(0, 1fr);
+  align-items: start;
+  width: 100%;
+  max-width: 100%;
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  zoom: 0.75;
+  overflow: visible;
+}
+
+.blog-post-page .blog-post-toc-layout--with-toc > .blog-toc-aside {
+  grid-column: 1;
+  grid-row: 1;
+  justify-self: end;
+  margin-right: clamp(14px, 2.5vw, 28px);
+  position: sticky;
+  top: clamp(12px, 4vh, 28px);
+  /* --blog-toc-top：与 .post-header 底边（横线）对齐，由 BlogPostTocLayoutClient 写入 */
+  margin-top: var(--blog-toc-top, 0px);
+  width: max-content;
+  /* 目录整体放大 30%（zoom 与 max 尺寸同步，避免裁切） */
+  zoom: 1.3;
+  max-width: 17.55rem; /* 13.5rem × 1.3 */
+  max-height: min(62vh, 520px); /* 400px × 1.3 */
+  overflow-x: hidden;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+
+.blog-post-page .blog-post-toc-layout--with-toc > .blog-main.blog-main-wide {
+  grid-column: 2;
+  grid-row: 1;
+  justify-self: stretch;
+  min-width: 0;
+  max-width: none;
+  width: 100%;
+  margin: 0;
+  padding-left: clamp(12px, 2.5vw, 28px);
+  padding-right: clamp(12px, 2.5vw, 28px);
+  zoom: 1;
+}
+
+/* 侧栏目录：气质接近 transitivebullsh.it / react-notion-x .notion-aside-table-of-contents */
+.blog-toc-aside {
+  position: sticky;
+  top: clamp(12px, 4vh, 28px);
+  max-height: none;
+  overflow: visible;
+  min-width: min(11.5rem, 100%);
+  max-width: 13.5rem;
+  margin: 0;
+  padding: 0;
+  border: none;
+  box-sizing: border-box;
+}
+
+.blog-toc-nav {
+  background: rgba(255, 255, 255, 0.72);
+  border: 1px solid rgba(55, 53, 47, 0.07);
+  border-radius: 8px;
+  box-shadow:
+    0 1px 2px rgba(15, 23, 42, 0.04),
+    0 4px 14px rgba(15, 23, 42, 0.05);
+  padding: 9px 7px 10px;
+  backdrop-filter: blur(8px);
+}
+
+/* 文章页：目录与 #fafafa 正文区统一，去重阴影卡片感（Notion 留白 + 左侧指示线） */
+.blog-post-page .blog-toc-nav {
+  background: transparent;
+  border: none;
+  border-radius: 0;
+  box-shadow: none;
+  backdrop-filter: none;
+  padding: 2px 0 4px 14px;
+  border-left: 2px solid var(--line-strong);
+}
+
+.blog-toc-heading {
+  margin: 0 0 5px;
+  padding: 0 4px 5px;
+  border-bottom: 1px solid rgba(55, 53, 47, 0.08);
+}
+
+.blog-post-page .blog-toc-heading {
+  margin: 0 0 8px;
+  padding: 0 0 8px;
+  border-bottom-color: var(--line);
+}
+
+.blog-toc-heading-label {
+  display: block;
+  font-size: 9px;
+  font-weight: 500;
+  letter-spacing: 0.11em;
+  text-transform: uppercase;
+  color: rgba(55, 53, 47, 0.42);
+  line-height: 1.25;
+}
+
+.blog-post-page .blog-toc-heading-label {
+  display: none;
+}
+
+.blog-toc-heading-cn {
+  display: block;
+  margin-top: 1px;
+  font-size: 11.5px;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  color: rgba(55, 53, 47, 0.78);
+  text-transform: none;
+}
+
+.blog-post-page .blog-toc-heading-cn {
+  margin-top: 0;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  color: var(--muted);
+}
+
+.blog-toc-list {
+  list-style: none;
+  margin: 0;
+  padding: 2px 0 0;
+}
+
+.blog-toc-item {
+  margin: 0;
+  padding: 0;
+  line-height: 1.2;
+}
+
+.blog-toc-item + .blog-toc-item {
+  margin-top: 0;
+}
+
+.blog-toc-link {
+  display: flex;
+  align-items: flex-start;
+  width: 100%;
+  font-size: 11.75px;
+  font-weight: 400;
+  color: rgba(55, 53, 47, 0.72);
+  text-decoration: none;
+  border-radius: 4px;
+  padding: 3px 5px;
+  line-height: 1.3;
+  opacity: 0.92;
+  word-break: break-word;
+  overflow-wrap: anywhere;
+  hyphens: auto;
+  transition:
+    background 90ms ease,
+    color 90ms ease,
+    opacity 90ms ease;
+}
+
+.blog-toc-link-text {
+  flex: 1;
+  min-width: 0;
+}
+
+.blog-toc-link:hover {
+  background: rgba(55, 53, 47, 0.055);
+  color: rgba(55, 53, 47, 0.95);
+  opacity: 1;
+}
+
+.blog-post-page .blog-toc-link {
+  color: var(--muted);
+  opacity: 1;
+}
+
+.blog-post-page .blog-toc-link:hover {
+  background: rgba(55, 53, 47, 0.05);
+  color: var(--text-secondary);
+}
+
+/* 层级：更小字号与缩进，整体更紧凑 */
+.blog-toc-item--depth-0 .blog-toc-link {
+  font-size: 11.75px;
+}
+
+.blog-toc-item--depth-1 .blog-toc-link {
+  padding-left: 10px;
+  font-size: 11.35px;
+  color: rgba(55, 53, 47, 0.68);
+}
+
+.blog-toc-item--depth-2 .blog-toc-link {
+  padding-left: 15px;
+  font-size: 11px;
+  color: rgba(55, 53, 47, 0.64);
+}
+
+.blog-toc-item--depth-3 .blog-toc-link {
+  padding-left: 20px;
+  font-size: 10.75px;
+  color: rgba(55, 53, 47, 0.6);
+}
+
+.blog-toc-item--depth-4 .blog-toc-link,
+.blog-toc-item--depth-5 .blog-toc-link {
+  padding-left: 24px;
+  font-size: 10.35px;
+  color: rgba(55, 53, 47, 0.58);
+}
+
+.blog-post-page .blog-toc-item--depth-1 .blog-toc-link,
+.blog-post-page .blog-toc-item--depth-2 .blog-toc-link,
+.blog-post-page .blog-toc-item--depth-3 .blog-toc-link,
+.blog-post-page .blog-toc-item--depth-4 .blog-toc-link,
+.blog-post-page .blog-toc-item--depth-5 .blog-toc-link {
+  color: var(--muted);
+}
+
+.blog-post-page .blog-toc-item--depth-1 .blog-toc-link:hover,
+.blog-post-page .blog-toc-item--depth-2 .blog-toc-link:hover,
+.blog-post-page .blog-toc-item--depth-3 .blog-toc-link:hover,
+.blog-post-page .blog-toc-item--depth-4 .blog-toc-link:hover,
+.blog-post-page .blog-toc-item--depth-5 .blog-toc-link:hover {
+  color: var(--text-secondary);
+}
+
+/* 右下角：悬停/点击展开分类（与站点 --surface / --line 统一，轻阴影） */
+.blog-home-fab-wrap {
+  position: fixed;
+  z-index: 50;
+  right: max(14px, calc(12px + env(safe-area-inset-right, 0px)));
+  bottom: max(14px, calc(12px + env(safe-area-inset-bottom, 0px)));
+  display: flex;
+  flex-direction: column-reverse;
+  align-items: flex-end;
+  gap: 8px;
+}
+
+.blog-home-fab-panel {
+  min-width: 11.75rem;
+  max-width: min(18rem, calc(100vw - 28px));
+  max-height: min(62vh, 400px);
+  overflow-x: hidden;
+  overflow-y: auto;
+  padding: 8px 6px 10px;
+  border-radius: var(--radius);
+  background: transparent;
+  border: none;
+  box-shadow: none;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(6px);
+  pointer-events: none;
+  transition:
+    opacity 0.16s ease,
+    visibility 0.16s ease,
+    transform 0.16s ease;
+}
+
+.blog-home-fab-wrap--open .blog-home-fab-panel {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+  pointer-events: auto;
+}
+
+.blog-home-fab-list {
+  list-style: none;
+  margin: 0;
+  padding: 2px 0 0;
+}
+
+.blog-home-fab-link {
+  display: block;
+  padding: 6px 10px;
+  font-size: 0.9375rem;
+  font-weight: 450;
+  line-height: 1.4;
+  letter-spacing: -0.01em;
+  color: var(--text-secondary);
+  text-decoration: none;
+  border-radius: 6px;
+  transition:
+    background 0.12s ease,
+    color 0.12s ease;
+}
+
+.blog-home-fab-link:hover {
+  background: rgba(55, 53, 47, 0.05);
+  color: var(--text);
+}
+
+.blog-home-fab-panel-divider {
+  height: 1px;
+  margin: 6px 8px 4px;
+  background: var(--line);
+}
+
+.blog-home-fab-home {
+  display: block;
+  padding: 8px 10px 6px;
+  font-size: 0.9375rem;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  color: var(--accent);
+  text-decoration: none;
+  border-radius: 6px;
+  transition:
+    background 0.12s ease,
+    color 0.12s ease;
+}
+
+.blog-home-fab-home:hover {
+  background: var(--accent-soft);
+  color: var(--accent-hover);
+}
+
+.blog-home-fab {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  color: var(--text-secondary);
+  background: var(--surface-elevated);
+  border: 1px solid var(--line);
+  box-shadow: var(--shadow-sm);
+  cursor: pointer;
+  transition:
+    background 0.15s ease,
+    color 0.15s ease,
+    box-shadow 0.15s ease,
+    transform 0.15s ease;
+}
+
+.blog-home-fab-wrap:hover .blog-home-fab,
+.blog-home-fab:hover {
+  color: var(--accent-hover);
+  background: var(--surface);
+  box-shadow: var(--shadow-md);
+  transform: translateY(-1px);
+}
+
+.blog-home-fab:focus-visible {
+  outline: 2px solid var(--accent, #106ba3);
+  outline-offset: 2px;
+}
+
+.blog-home-fab-icon {
+  display: flex;
+  line-height: 0;
+}
+
+/* 锚点跳转时预留偏移（无固定顶栏时略留空即可） */
+.blog-post-page .notion-h {
+  scroll-margin-top: 1rem;
+}
+
+@media (max-width: 960px) {
+  .blog-post-page .blog-post-toc-layout--with-toc {
+    display: block;
+    width: 100%;
+    max-width: 100%;
+  }
+
+  .blog-post-page .blog-post-toc-layout--with-toc > .blog-main.blog-main-wide {
+    grid-column: unset;
+    max-width: min(94vw, 52rem);
+    width: 100%;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .blog-post-page .blog-post-toc-layout--with-toc > .blog-toc-aside {
+    grid-column: unset;
+    position: static;
+    justify-self: unset;
+    margin-right: 0;
+    margin-top: 0;
+    max-height: none;
+    overflow: visible;
+    width: auto;
+    max-width: none;
+  }
+
+  .blog-toc-aside {
+    display: none;
+  }
 }
 
 /* 修正：tb-site 在 layout 外层，原先 .blog-post-page .tb-site 无法匹配 */
@@ -756,6 +1221,11 @@ a {
   text-align: left;
 }
 
+/* 数据库子页顶部的 Tags / Published / Author / URL 等属性块（站点侧不展示） */
+.blog-post-page .notion-blog-themed .notion-collection-page-properties {
+  display: none !important;
+}
+
 .tb-site .notion-blog-themed .notion-code,
 .tb-site .notion-blog-themed pre.notion-code,
 .tb-site .notion-blog-themed ul.notion-list,
@@ -778,10 +1248,11 @@ a {
 }
 
 /* 代码块：禁用横向滚动，允许在窄栏内换行（长行代码会折行） */
+/* 勿用 overflow-y: visible：与 overflow-x: hidden 组合时规范会把 y 算成 auto → 单行也易出现竖滚动条 */
 .tb-site .notion-blog-themed pre.notion-code,
 .tb-site .notion-blog-themed .notion-code {
   overflow-x: hidden;
-  overflow-y: visible;
+  overflow-y: clip;
   max-width: 100%;
   box-sizing: border-box;
 }
@@ -872,6 +1343,9 @@ a {
   border: 1px solid var(--line);
   box-shadow: var(--shadow-sm);
   background: #f5f2f0 !important;
+  /* 覆盖 react-notion-x 的 overflow:auto，避免与站点侧 overflow-x 组合出竖条 */
+  overflow-x: hidden;
+  overflow-y: clip;
 }
 
 .notion-blog-themed .notion-code code {
