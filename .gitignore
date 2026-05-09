@@ -8,3 +8,6 @@ coverage
 .env.local
 *.log
 tsconfig.tsbuildinfo
+
+# Generated at build time; keep directory via content/posts/.gitkeep
+content/posts/*.md

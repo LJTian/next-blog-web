@@ -1,15 +1,36 @@
 :root {
   color-scheme: light;
-  --bg: #f6f5f1;
+  /* --font-sans / --font-serif / --font-mono 由 next/font 在 body 上注入 */
+  /* 调色贴近 Notion 公开页 / transitivebullsh.it */
+
+  --bg0: #ffffff;
+  --bg1: #fafafa;
   --surface: #ffffff;
-  --text: #171717;
-  --line: #d8d3c8;
-  --accent: #256f75;
-  --accent-hover: #1d5b60;
+  --surface-elevated: #f7f6f3;
+  --text: #37352f;
+  --text-secondary: rgba(55, 53, 47, 0.82);
+  --muted: rgba(55, 53, 47, 0.6);
+  --line: rgba(55, 53, 47, 0.09);
+  --line-strong: rgba(55, 53, 47, 0.16);
+  --accent: #0b6e99;
+  --accent-soft: rgba(11, 110, 153, 0.14);
+  --accent-hover: #094d73;
+  --link: #0b6e99;
+  --code-bg: rgba(135, 131, 120, 0.15);
+  --shiki-radius: 8px;
+  --shadow-sm: 0 1px 2px rgba(15, 23, 42, 0.04);
+  --shadow-md: 0 4px 12px rgba(15, 23, 42, 0.06);
+  --shadow-lg: 0 8px 24px rgba(15, 23, 42, 0.06);
+  --radius: 8px;
+  --topbar-h: 58px;
 }
 
 * {
   box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
 }
 
 html,
@@ -19,13 +40,37 @@ body {
 }
 
 body {
-  background: var(--bg);
+  background: var(--bg0);
   color: var(--text);
   font-family:
-    Arial,
+    var(--font-sans),
+    ui-sans-serif,
+    system-ui,
+    -apple-system,
+    "Segoe UI",
     "PingFang SC",
+    "Hiragino Sans GB",
     "Microsoft YaHei",
     sans-serif;
+  font-size: 16px;
+  line-height: 1.65;
+  -webkit-font-smoothing: antialiased;
+}
+
+::selection {
+  background: rgba(45, 170, 219, 0.28);
+  color: var(--text);
+}
+
+@keyframes blog-fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 a {
@@ -33,88 +78,1117 @@ a {
   text-decoration: none;
 }
 
+/* ——— 博客布局（无顶栏/页脚时的根容器） ——— */
+.blog-layout-root {
+  min-height: 100vh;
+  /* 整体放大 50%（= 缩放到 150%）；含 px/rem、Notion 区块 */
+  zoom: 1.5;
+}
+
+/* 部分浏览器对 zoom 支持不佳时用 transform 兜底 */
+@supports not (zoom: 1) {
+  .blog-layout-root {
+    transform: scale(1.5);
+    transform-origin: top center;
+    width: calc(100% / 1.5);
+    max-width: none;
+    margin-left: auto;
+    margin-right: auto;
+  }
+}
+
+.tb-site {
+  /* 正文 + 画廊整体居中收窄（与列表页共用） */
+  --tb-content-max: min(92vw, 48rem);
+}
+
+/* ——— 站点头图（渐变横幅 + 重叠头像 + 标题） ——— */
+.blog-profile-hero {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  max-width: var(--tb-content-max);
+  margin: 0 auto;
+  padding: clamp(14px, 3vw, 24px) clamp(16px, 4vw, 28px) 0;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.blog-profile-banner {
+  position: relative;
+  overflow: hidden;
+  width: 100%;
+  height: clamp(96px, 20vw, 132px);
+  border-radius: 16px;
+  background: linear-gradient(
+    118deg,
+    #fce4ec 0%,
+    #faf8fb 38%,
+    #f5f9fd 68%,
+    #dceefc 100%
+  );
+  box-shadow:
+    0 4px 22px rgba(15, 23, 42, 0.07),
+    0 0 0 1px rgba(55, 53, 47, 0.06);
+}
+
+.blog-profile-banner--cover {
+  background: #e8ecf0;
+}
+
+.blog-profile-banner-img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.blog-profile-avatar-wrap {
+  margin-top: -48px;
+  position: relative;
+  z-index: 2;
+}
+
+.blog-profile-avatar {
+  width: 96px;
+  height: 96px;
+  border-radius: 50%;
+  border: 4px solid var(--surface);
+  box-shadow: 0 4px 18px rgba(15, 23, 42, 0.12);
+  box-sizing: border-box;
+}
+
+.blog-profile-avatar-img {
+  display: block;
+  object-fit: cover;
+  background: var(--surface-elevated);
+}
+
+.blog-profile-avatar-fallback {
+  display: grid;
+  place-items: center;
+  background: linear-gradient(145deg, #b3e0f2, #e1bee7);
+  font-family: var(--font-sans), system-ui, sans-serif;
+  font-size: 1.65rem;
+  font-weight: 700;
+  letter-spacing: -0.06em;
+  color: var(--text);
+}
+
+.blog-profile-avatar-emoji {
+  display: grid;
+  place-items: center;
+  background: linear-gradient(145deg, #d4ecf8, #ede7f6);
+  font-size: clamp(2.25rem, 6vw, 2.85rem);
+  line-height: 1;
+}
+
+.blog-profile-site-title {
+  margin: 14px 0 10px;
+  font-size: 1.22rem;
+  font-weight: 700;
+  letter-spacing: -0.035em;
+  color: var(--text);
+  text-align: center;
+}
+
+/* 头图已占位顶部留白时略收紧主内容上边距 */
+.blog-profile-hero + .blog-main {
+  padding-top: clamp(12px, 2.5vw, 24px);
+}
+
+/* ——— 顶栏（保留类名供将来启用站点导航时复用） ——— */
 .site-shell {
   min-height: 100vh;
   display: grid;
-  grid-template-rows: auto 1fr;
+  grid-template-rows: var(--topbar-h) 1fr auto;
 }
 
 .topbar {
-  min-height: 56px;
+  position: sticky;
+  top: 0;
+  z-index: 40;
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 16px;
-  padding: 10px clamp(16px, 4vw, 40px);
+  height: var(--topbar-h);
+  padding: 0 clamp(16px, 4vw, 40px);
   border-bottom: 1px solid var(--line);
-  background: rgba(255, 255, 255, 0.92);
-  backdrop-filter: blur(12px);
+  background: rgba(255, 255, 255, 0.82);
+  backdrop-filter: blur(14px) saturate(1.2);
+  box-shadow: var(--shadow-sm);
 }
 
 .brand {
-  font-size: 18px;
-  font-weight: 700;
-  line-height: 1.2;
-  white-space: nowrap;
-}
-
-.notion-link {
-  min-height: 36px;
   display: inline-flex;
   align-items: center;
-  justify-content: center;
-  padding: 8px 12px;
-  border: 1px solid var(--accent);
-  border-radius: 6px;
-  color: var(--surface);
+  gap: 10px;
+  font-size: 17px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: var(--text);
+  transition: color 0.15s ease;
+}
+
+.brand:hover {
+  color: var(--accent);
+}
+
+.brand-mark {
+  width: 8px;
+  height: 8px;
+  border-radius: 2px;
   background: var(--accent);
-  font-size: 14px;
+  box-shadow: none;
+}
+
+.nav-links {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.nav-link-pill {
+  font-size: 13px;
   font-weight: 600;
-  line-height: 1;
-  white-space: nowrap;
-}
-
-.notion-link:hover {
-  background: var(--accent-hover);
-  border-color: var(--accent-hover);
-}
-
-.embed-frame {
-  min-height: 0;
-  padding: 12px;
-}
-
-.embed-frame iframe {
-  width: 100%;
-  height: calc(100vh - 80px);
-  display: block;
-  border: 1px solid var(--line);
-  border-radius: 8px;
+  padding: 8px 14px;
+  border-radius: 999px;
   background: var(--surface);
+  border: 1px solid var(--line);
+  color: var(--accent);
+  transition:
+    border-color 0.15s ease,
+    box-shadow 0.15s ease,
+    background 0.15s ease;
+}
+
+.nav-link-pill:hover {
+  border-color: var(--accent);
+  background: var(--accent-soft);
+  box-shadow: var(--shadow-sm);
+}
+
+.brand:focus-visible,
+.nav-link-pill:focus-visible,
+.post-list-link:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+}
+
+/* ——— 页脚 ——— */
+.site-footer {
+  padding: 28px clamp(16px, 4vw, 40px) 36px;
+  border-top: 1px solid var(--line);
+  background: rgba(255, 255, 255, 0.5);
+}
+
+.site-footer-inner {
+  max-width: 48rem;
+  margin: 0 auto;
+  font-size: 13px;
+  color: var(--muted);
+  line-height: 1.5;
+  text-align: center;
+}
+
+.site-footer-muted {
+  display: block;
+  margin-top: 4px;
+  font-size: 12px;
+  opacity: 0.85;
+}
+
+@media (min-width: 640px) {
+  .site-footer-muted {
+    display: inline;
+    margin-top: 0;
+  }
+  .site-footer-muted::before {
+    content: "· ";
+  }
+}
+
+/* ——— 博客主区 ——— */
+.blog-main {
+  max-width: 40rem;
+  margin: 0 auto;
+  padding: clamp(28px, 5vw, 52px) clamp(16px, 4vw, 28px) 56px;
+  width: 100%;
+}
+
+.blog-main-wide {
+  max-width: min(92vw, 88rem);
+}
+
+.tb-site .blog-main-wide {
+  max-width: var(--tb-content-max);
+}
+
+.blog-main.blog-main-wide {
+  padding-left: clamp(12px, 2.5vw, 28px);
+  padding-right: clamp(12px, 2.5vw, 28px);
+}
+
+.blog-index-head {
+  margin-bottom: 2rem;
+}
+
+.blog-heading-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px 14px;
+  margin-bottom: 0.5rem;
+}
+
+.blog-heading-row .blog-heading {
+  margin: 0;
+}
+
+.blog-count-pill {
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.01em;
+  padding: 4px 10px;
+  border-radius: 4px;
+  background: rgba(227, 226, 224, 0.55);
+  color: var(--muted);
+  border: none;
+  box-shadow: none;
+}
+
+.blog-heading {
+  margin: 0 0 0.5rem;
+  font-size: clamp(2rem, 5vw, 2.85rem);
+  font-weight: 700;
+  letter-spacing: -0.035em;
+  color: var(--text);
+}
+
+.blog-lead {
+  margin: 0;
+  font-size: 16px;
+  color: var(--muted);
+  line-height: 1.65;
+  max-width: 42em;
+}
+
+.tb-feed-heading {
+  margin: 2.5rem 0 0.35rem;
+  font-size: 0.95rem;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  color: var(--text);
+}
+
+.tb-site .blog-main:not(.blog-main-wide) {
+  max-width: var(--tb-content-max);
+}
+
+.blog-empty-card {
+  padding: 28px 22px;
+  border-radius: var(--radius);
+  border: 1px dashed var(--line-strong);
+  background: var(--surface-elevated);
+}
+
+.blog-empty {
+  margin: 0;
+  color: var(--text-secondary);
+  line-height: 1.65;
+  font-size: 14px;
+}
+
+.post-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.tb-site .post-list {
+  gap: 0;
+}
+
+.post-list article {
+  margin: 0;
+  animation: blog-fade-up 0.5s cubic-bezier(0.22, 1, 0.36, 1) backwards;
+}
+
+.post-list article:nth-child(1) {
+  animation-delay: 0.04s;
+}
+
+.post-list article:nth-child(2) {
+  animation-delay: 0.09s;
+}
+
+.post-list article:nth-child(3) {
+  animation-delay: 0.14s;
+}
+
+.post-list article:nth-child(4) {
+  animation-delay: 0.19s;
+}
+
+.post-list article:nth-child(5) {
+  animation-delay: 0.24s;
+}
+
+.post-list article:nth-child(6) {
+  animation-delay: 0.29s;
+}
+
+.post-list article:nth-child(7) {
+  animation-delay: 0.34s;
+}
+
+.post-list article:nth-child(8) {
+  animation-delay: 0.39s;
+}
+
+.post-list-link {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 18px 20px;
+  border-radius: var(--radius);
+  border: 1px solid var(--line);
+  background: var(--surface);
+  box-shadow: var(--shadow-sm);
+  transition:
+    border-color 0.18s ease,
+    box-shadow 0.18s ease,
+    transform 0.18s ease,
+    background 0.15s ease;
+}
+
+.tb-site .post-list-link {
+  border-radius: 0;
+  border: none;
+  border-bottom: 1px solid var(--line);
+  background: transparent;
+  box-shadow: none;
+  padding: 1.15rem 0.35rem 1.15rem 0;
+}
+
+.tb-site .post-list li:last-child .post-list-link {
+  border-bottom: none;
+}
+
+@media (hover: hover) {
+  .post-list-link:hover {
+    border-color: rgba(13, 107, 110, 0.35);
+    box-shadow: var(--shadow-md);
+    transform: translateY(-1px);
+  }
+
+  .tb-site .post-list-link:hover {
+    border-color: var(--line);
+    box-shadow: none;
+    transform: none;
+    background: rgba(55, 53, 47, 0.03);
+  }
+}
+
+.post-list-main {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.post-list-title {
+  margin: 0;
+  font-size: 1.1rem;
+  font-weight: 650;
+  letter-spacing: -0.02em;
+  line-height: 1.35;
+  color: var(--text);
+}
+
+.tb-site .post-list-title {
+  font-size: 1.05rem;
+  font-weight: 600;
+}
+
+.post-list-arrow {
+  flex-shrink: 0;
+  font-size: 18px;
+  color: var(--accent);
+  opacity: 0.45;
+  transition: opacity 0.15s ease, transform 0.15s ease;
+}
+
+.tb-site .post-list-arrow {
+  opacity: 0.35;
+  font-size: 16px;
+}
+
+.post-list-link:hover .post-list-arrow {
+  opacity: 0.85;
+  transform: translateX(2px);
+}
+
+.tb-site .post-list-link:hover .post-list-arrow {
+  opacity: 0.55;
+  transform: translateX(1px);
+}
+
+.post-list-date {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.post-list-date-missing {
+  font-style: italic;
+  font-weight: 400;
+  opacity: 0.75;
+}
+
+/* ——— 文章页 ——— */
+.post-article {
+  position: relative;
+  border-radius: calc(var(--radius) + 2px);
+  border: 1px solid var(--line);
+  background: linear-gradient(
+      165deg,
+      rgba(255, 255, 255, 0.92) 0%,
+      var(--surface) 48%,
+      var(--surface-elevated) 100%
+    ),
+    var(--surface);
+  box-shadow:
+    var(--shadow-lg),
+    0 0 0 1px rgba(255, 255, 255, 0.6) inset;
+  padding: clamp(22px, 4vw, 40px) clamp(18px, 4vw, 44px) clamp(32px, 5vw, 48px);
+  overflow: hidden;
+}
+
+.post-article::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(
+    90deg,
+    var(--accent),
+    rgba(10, 95, 143, 0.65),
+    rgba(13, 107, 110, 0.35)
+  );
+  opacity: 0.85;
+  pointer-events: none;
+}
+
+.tb-site .post-article {
+  border: none;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+  padding: clamp(12px, 2vw, 20px) 0 clamp(28px, 5vw, 56px);
+}
+
+.tb-site .post-article::before {
+  display: none;
+}
+
+.post-header {
+  padding-bottom: 1.25rem;
+  margin-bottom: 1.5rem;
+  border-bottom: 1px solid var(--line);
+}
+
+.post-title {
+  margin: 0 0 0.35rem;
+  font-size: clamp(1.65rem, 4vw, 2.15rem);
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  line-height: 1.25;
+  color: var(--text);
+}
+
+.tb-site .post-title {
+  font-size: clamp(1.85rem, 4.5vw, 2.5rem);
+  letter-spacing: -0.035em;
+}
+
+.post-meta {
+  margin: 0;
+  font-size: 14px;
+  color: var(--muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.post-source-hint {
+  margin: 0.65rem 0 0;
+  font-size: 12px;
+  line-height: 1.45;
+  padding: 6px 10px;
+  border-radius: 8px;
+  border: 1px solid var(--line);
+}
+
+.post-source-hint.notion-live {
+  background: rgba(13, 107, 110, 0.07);
+  color: var(--accent);
+  border-color: rgba(13, 107, 110, 0.22);
+}
+
+.post-source-hint.markdown-fallback {
+  background: rgba(180, 130, 40, 0.08);
+  color: #8a5a16;
+  border-color: rgba(180, 130, 40, 0.25);
+}
+
+.tb-site .post-source-hint {
+  background: rgba(55, 53, 47, 0.045);
+  border-color: transparent;
+  color: var(--muted);
+}
+
+.tb-site .post-source-hint.notion-live {
+  background: rgba(55, 53, 47, 0.045);
+  border-color: transparent;
+  color: var(--muted);
+}
+
+.tb-site .post-source-hint.markdown-fallback {
+  background: rgba(55, 53, 47, 0.06);
+  color: var(--muted);
+  border-color: transparent;
+}
+
+/* react-notion-x 容器：与站点卡片对齐 */
+.notion-blog-root {
+  margin-top: 0.5rem;
+}
+
+.notion-blog-root .notion-page {
+  padding: 0 !important;
+}
+
+.notion-blog-root .notion-page-scroller {
+  padding-left: 0 !important;
+  padding-right: 0 !important;
+}
+
+/* Notion 正文：对齐站点字体与强调色 */
+.notion-blog-themed {
+  --notion-font:
+    var(--font-sans),
+    ui-sans-serif,
+    system-ui,
+    -apple-system,
+    "Segoe UI",
+    "PingFang SC",
+    "Microsoft YaHei",
+    sans-serif;
+  --fg-color: var(--text-secondary);
+  --fg-color-2: rgba(55, 53, 47, 0.45);
+  --fg-color-4: var(--text);
+  --fg-color-6: rgba(55, 53, 47, 0.78);
+  --fg-color-icon: rgba(55, 53, 47, 0.55);
+  --bg-color: transparent;
+  --bg-color-0: rgba(55, 53, 47, 0.06);
+  --bg-color-1: var(--code-bg);
+  --bg-color-2: rgba(135, 131, 120, 0.15);
+  --select-color-0: rgb(46, 170, 220);
+  --select-color-1: rgba(45, 170, 219, 0.28);
+  --select-color-2: rgba(45, 170, 219, 0.12);
+  --notion-corner-radius: 8px;
+  /* react-notion-x 默认 720px，放宽为占满文章卡片宽度 */
+  --notion-max-width: 100%;
+  font-size: 1rem;
+  line-height: 1.75;
+}
+
+.notion-blog-themed .notion-link {
+  color: var(--link);
+  opacity: 1;
+  border-color: rgba(10, 95, 143, 0.35);
+}
+
+.notion-blog-themed .notion-link:hover {
+  border-color: var(--accent);
+  color: var(--accent-hover);
+}
+
+.notion-blog-themed .notion-inline-code {
+  color: #eb5757;
+  background: rgba(135, 131, 120, 0.12);
+  border: none;
+  font-family: var(--font-mono), ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 0.85em;
+}
+
+/* 与 prism.css 浅色块一致，保证 .token 彩色与底色对比 */
+.notion-blog-themed .notion-code {
+  font-family: var(--font-mono), ui-monospace, SFMono-Regular, Menlo, Consolas,
+    monospace;
+  font-size: 0.8125rem;
+  line-height: 1.62;
+  border: 1px solid var(--line);
+  box-shadow: var(--shadow-sm);
+  background: #f5f2f0 !important;
+}
+
+.notion-blog-themed .notion-code code {
+  background: transparent !important;
+  text-shadow: none;
+}
+
+.notion-blog-themed .notion-code .token {
+  background: transparent;
+}
+
+/* 高于误设的继承色，与 prism.css 浅色主题一致（token 存在时必生效） */
+.notion-blog-themed pre.notion-code code .token.comment,
+.notion-blog-themed pre.notion-code code .token.prolog,
+.notion-blog-themed pre.notion-code code .token.doctype,
+.notion-blog-themed pre.notion-code code .token.cdata {
+  color: slategray;
+}
+
+.notion-blog-themed pre.notion-code code .token.punctuation {
+  color: #999;
+}
+
+.notion-blog-themed pre.notion-code code .token.property,
+.notion-blog-themed pre.notion-code code .token.tag,
+.notion-blog-themed pre.notion-code code .token.boolean,
+.notion-blog-themed pre.notion-code code .token.number,
+.notion-blog-themed pre.notion-code code .token.constant,
+.notion-blog-themed pre.notion-code code .token.symbol,
+.notion-blog-themed pre.notion-code code .token.deleted {
+  color: #905;
+}
+
+.notion-blog-themed pre.notion-code code .token.selector,
+.notion-blog-themed pre.notion-code code .token.attr-name,
+.notion-blog-themed pre.notion-code code .token.string,
+.notion-blog-themed pre.notion-code code .token.char,
+.notion-blog-themed pre.notion-code code .token.builtin,
+.notion-blog-themed pre.notion-code code .token.inserted {
+  color: #690;
+}
+
+.notion-blog-themed pre.notion-code code .token.operator,
+.notion-blog-themed pre.notion-code code .token.entity,
+.notion-blog-themed pre.notion-code code .token.url,
+.notion-blog-themed pre.notion-code code .language-css .token.string,
+.notion-blog-themed pre.notion-code code .style .token.string {
+  color: #9a6e3a;
+}
+
+.notion-blog-themed pre.notion-code code .token.atrule,
+.notion-blog-themed pre.notion-code code .token.attr-value,
+.notion-blog-themed pre.notion-code code .token.keyword {
+  color: #07a;
+}
+
+.notion-blog-themed pre.notion-code code .token.function,
+.notion-blog-themed pre.notion-code code .token.class-name {
+  color: #dd4a68;
+}
+
+.notion-blog-themed .notion-asset-wrapper img {
+  border-radius: 10px;
+  border: 1px solid var(--line);
+  box-shadow: var(--shadow-sm);
+}
+
+.notion-blog-themed .notion-quote {
+  border-left-color: var(--text) !important;
+  background: transparent !important;
+}
+
+.notion-blog-themed .notion-callout {
+  border-radius: var(--radius);
+  border: 1px solid var(--line);
+  box-shadow: var(--shadow-sm);
+}
+
+.notion-blog-themed .notion-collection-card {
+  border-radius: var(--radius);
+  border-color: var(--line);
+  box-shadow: var(--shadow-sm);
+  transition:
+    border-color 0.18s ease,
+    box-shadow 0.18s ease;
+}
+
+@media (hover: hover) {
+  .notion-blog-themed .notion-collection-card:hover {
+    border-color: rgba(13, 107, 110, 0.35);
+    box-shadow: var(--shadow-md);
+  }
+}
+
+/* 画廊 / Board 卡片网格：固定 2 列（覆盖 react-notion-x 的 auto-fill） */
+.notion-blog-themed .notion-gallery-grid,
+.notion-blog-themed .notion-gallery-grid-size-small,
+.notion-blog-themed .notion-gallery-grid-size-large {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+@media (max-width: 560px) {
+  .notion-blog-themed .notion-gallery-grid,
+  .notion-blog-themed .notion-gallery-grid-size-small,
+  .notion-blog-themed .notion-gallery-grid-size-large {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+.notion-blog-themed .notion-h,
+.notion-blog-themed .notion-h-title {
+  font-family: var(--font-sans), "PingFang SC", "Microsoft YaHei", sans-serif;
+  letter-spacing: -0.02em;
+}
+
+.notion-blog-themed .notion-h.notion-h1 .notion-h-title {
+  font-size: 1.45rem;
+}
+
+.notion-blog-themed .notion-h.notion-h2 .notion-h-title {
+  font-size: 1.28rem;
+}
+
+.notion-blog-themed .notion-h.notion-h3 .notion-h-title {
+  font-size: 1.12rem;
+}
+
+/* ——— 正文排版（Notion / GFM） ——— */
+.post-prose {
+  font-family:
+    var(--font-sans),
+    ui-sans-serif,
+    system-ui,
+    -apple-system,
+    "Segoe UI",
+    "PingFang SC",
+    "Microsoft YaHei",
+    sans-serif;
+  font-size: 1rem;
+  line-height: 1.75;
+  color: var(--text-secondary);
+  overflow-wrap: anywhere;
+}
+
+.post-body > *:first-child {
+  margin-top: 0;
+}
+
+.post-body > *:last-child {
+  margin-bottom: 0;
+}
+
+.post-body p {
+  margin: 0.9em 0;
+}
+
+.post-body strong {
+  font-weight: 650;
+  color: var(--text);
+}
+
+.post-body em {
+  font-style: italic;
+}
+
+.post-body h1,
+.post-body h2,
+.post-body h3,
+.post-body h4,
+.post-body h5,
+.post-body h6 {
+  font-family: var(--font-sans), "PingFang SC", "Microsoft YaHei", sans-serif;
+  color: var(--text);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  line-height: 1.3;
+  margin: 1.65em 0 0.55em;
+  scroll-margin-top: calc(var(--topbar-h) + 12px);
+}
+
+.post-body h1 {
+  font-size: 1.45rem;
+}
+
+.post-body h2 {
+  font-size: 1.28rem;
+  padding-bottom: 0.35em;
+  border-bottom: 1px solid var(--line);
+}
+
+.post-body h3 {
+  font-size: 1.14rem;
+}
+
+.post-body h4 {
+  font-size: 1.05rem;
+}
+
+.post-body h5,
+.post-body h6 {
+  font-size: 1rem;
+  text-transform: none;
+}
+
+/* 标题锚点（rehype-autolink-headings） */
+.post-body :is(h1, h2, h3, h4, h5, h6) {
+  position: relative;
+}
+
+.post-body .heading-anchor {
+  margin-left: 0.3em;
+  font-weight: 500;
+  text-decoration: none !important;
+  vertical-align: middle;
+}
+
+.post-body .heading-anchor .icon.icon-link {
+  position: relative;
+  display: inline-block;
+  width: 0.9em;
+  height: 0.9em;
+  vertical-align: -0.05em;
+}
+
+.post-body .heading-anchor .icon.icon-link::after {
+  content: "#";
+  position: absolute;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  font-family: var(--font-mono), ui-monospace, monospace;
+  font-size: 0.72em;
+  font-weight: 600;
+  color: var(--accent);
+  opacity: 0;
+  transition: opacity 0.15s ease;
+}
+
+.post-body :is(h1, h2, h3, h4, h5, h6):hover .heading-anchor .icon.icon-link::after {
+  opacity: 0.38;
+}
+
+@media (hover: none) {
+  .post-body .heading-anchor .icon.icon-link::after {
+    opacity: 0.28;
+  }
+}
+
+.post-body ul,
+.post-body ol {
+  margin: 0.9em 0;
+  padding-left: 1.4em;
+}
+
+.post-body li {
+  margin: 0.4em 0;
+}
+
+.post-body li::marker {
+  color: var(--muted);
+}
+
+.post-body .contains-task-list {
+  list-style: none;
+  padding-left: 0;
+}
+
+.post-body .task-list-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5em;
+}
+
+.post-body .task-list-item input[type="checkbox"] {
+  margin: 0.35em 0 0;
+  flex-shrink: 0;
+  accent-color: var(--accent);
+  cursor: default;
+}
+
+.post-body blockquote {
+  margin: 1.15em 0;
+  padding: 0.65em 0 0.65em 1.1em;
+  border-left: 3px solid var(--text);
+  background: transparent;
+  color: var(--text-secondary);
+  font-style: normal;
+}
+
+.post-body blockquote p {
+  margin: 0.45em 0;
+}
+
+.post-body hr {
+  border: none;
+  height: 1px;
+  margin: 2.25em 0;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    var(--line-strong) 15%,
+    var(--line-strong) 85%,
+    transparent
+  );
+}
+
+.post-body a {
+  color: var(--link);
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 3px;
+  transition: color 0.12s ease;
+}
+
+.post-body a:hover {
+  color: var(--accent);
+}
+
+.post-body kbd {
+  font-family: var(--font-mono), ui-monospace, monospace;
+  font-size: 0.82em;
+  padding: 0.12em 0.45em;
+  border-radius: 5px;
+  border: 1px solid var(--line-strong);
+  background: linear-gradient(180deg, var(--surface), #f0f2f5);
+  box-shadow: 0 1px 0 var(--line);
+}
+
+.post-body code {
+  font-family: var(--font-mono), ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 0.86em;
+  font-weight: 500;
+  background: rgba(135, 131, 120, 0.12);
+  color: #eb5757;
+  padding: 0.12em 0.38em;
+  border-radius: 4px;
+  border: none;
+}
+
+/* Shiki 代码块（rehype-pretty-code） */
+.post-body pre {
+  margin: 1.2em 0;
+  padding: 0;
+  overflow: hidden;
+  font-family: var(--font-mono), ui-monospace, monospace;
+  font-size: 0.8125rem;
+  line-height: 1.62;
+  border-radius: var(--shiki-radius);
+  border: 1px solid var(--line);
+  box-shadow: var(--shadow-sm);
+}
+
+.post-body pre code {
+  display: block;
+  padding: 1rem 1.15rem;
+  overflow-x: auto;
+  background: transparent !important;
+  border: none;
+  font-size: inherit;
+  font-weight: 400;
+  color: inherit;
+}
+
+.post-body pre.shiki {
+  background-color: var(--surface-elevated);
+}
+
+.post-body table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 1.15em 0;
+  font-family: var(--font-sans), "PingFang SC", sans-serif;
+  font-size: 0.9em;
+  border-radius: 10px;
+  overflow: hidden;
+  border: 1px solid var(--line);
+  box-shadow: var(--shadow-sm);
+}
+
+.post-body th,
+.post-body td {
+  border: 1px solid var(--line);
+  padding: 10px 12px;
+  text-align: left;
+}
+
+.post-body th {
+  background: rgba(55, 53, 47, 0.05);
+  font-weight: 650;
+  color: var(--text);
+}
+
+.post-body tr:nth-child(even) td {
+  background: rgba(0, 0, 0, 0.015);
+}
+
+.post-body img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 10px;
+  border: 1px solid var(--line);
+  margin: 1em 0;
+}
+
+.post-body .footnotes {
+  margin-top: 2.5rem;
+  padding-top: 1.25rem;
+  border-top: 1px solid var(--line);
+  font-size: 0.88rem;
+  color: var(--muted);
+}
+
+.post-body .footnotes ol {
+  padding-left: 1.25em;
+}
+
+.post-body .data-footnote-backref {
+  text-decoration: none;
+  font-size: 0.85em;
+}
+
+.post-body sup a[data-footnote-ref] {
+  text-decoration: none;
+  font-weight: 600;
 }
 
 @media (max-width: 640px) {
-  .topbar {
-    min-height: 52px;
-    padding: 8px 12px;
+  :root {
+    --topbar-h: 52px;
   }
 
-  .brand {
-    font-size: 16px;
+  .post-prose {
+    font-size: 1rem;
   }
 
-  .notion-link {
-    min-height: 34px;
-    padding: 8px 10px;
-    font-size: 13px;
+  .post-body pre code {
+    padding: 0.85rem 0.95rem;
+    font-size: 0.78rem;
   }
 
-  .embed-frame {
-    padding: 8px;
+  .notion-blog-themed {
+    font-size: 1rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .post-list article {
+    animation: none;
   }
 
-  .embed-frame iframe {
-    height: calc(100vh - 68px);
-    border-radius: 6px;
+  html {
+    scroll-behavior: auto;
   }
 }
