@@ -6,7 +6,10 @@ import { notFound } from "next/navigation";
 import { BlogProfileHero } from "@/components/BlogProfileHero";
 import { NotionBlogBody } from "@/components/NotionBlogBody";
 import { BlogPostTocLayout } from "@/components/BlogPostTocLayout";
-import { BLOG_PORTAL_SLUG } from "@/lib/blogPortal";
+import {
+  BLOG_PORTAL_SLUG,
+  getBlogPortalPostFallback,
+} from "@/lib/blogPortal";
 import { fetchNotionPageRecordMap } from "@/lib/fetchNotionRecordMap";
 import { getNotionPageHeroAssets } from "@/lib/notionPageHero";
 import { markdownToHtml } from "@/lib/markdown";
@@ -98,6 +101,10 @@ export async function generateBlogPostPageMetadata(
     if (cat) {
       title = cat.title;
       pageId = getResolvedCategoryPageIdForApi(cat);
+    } else if (slug === BLOG_PORTAL_SLUG) {
+      const fb = getBlogPortalPostFallback();
+      title = fb.data.title;
+      pageId = fb.data.page_id;
     }
   }
 
@@ -181,7 +188,12 @@ export async function BlogPostPageView({ slug }: { slug: string }) {
     post = getPostBySlug(slug);
     category = null;
   } catch {
-    if (!category) notFound();
+    if (slug === BLOG_PORTAL_SLUG) {
+      post = getBlogPortalPostFallback() as ReturnType<typeof getPostBySlug>;
+      category = null;
+    } else if (!category) {
+      notFound();
+    }
   }
 
   const data = post?.data;

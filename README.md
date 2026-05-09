@@ -59,10 +59,14 @@ npm run dev
 | `NOTION_POSTS_DATA_SOURCE_ID` 与 `NOTION_PROP_*` | 可选：用数据源驱动同步列表（详见 [`scripts/sync-notion.mjs`](scripts/sync-notion.mjs)） |
 | `NOTION_LOG` / `NEXT_PUBLIC_NOTION_LOG` | 设为 `quiet`、`0` 或 `false` 可减少服务端或浏览器侧部分日志 |
 | `NEXT_DEV_ALLOWED_ORIGINS` | 用局域网 IP 访问开发服务器时，在此填写 hostname（多个用逗号或空格），与 `next.config.mjs` 中的 `allowedDevOrigins` 配合 |
+| `NOTION_BLOG_PORTAL_PAGE_ID` | 可选：32 位 hex（可无连字符），覆盖 `/blog` 门户对应的 Notion 页面 ID；不设则与 [`scripts/sync-notion.mjs`](scripts/sync-notion.mjs) 内门户条目一致 |
+
+**Vercel**：`content/posts/*.md` 默认不进仓库时，`/blog` 仍凭内置门户 `page_id` 拉 Notion，不应再因缺文件而 404。若线上曾出现过 404，边缘可能缓存约 1 分钟；部署修复后可等待 TTL 或在 Vercel 做一次 **Redeploy / Purge Cache**。其余 **`/blog/[slug]`** 若无对应 Markdown 或未映射分类，仍会继续返回 404。
 
 ## 代码入口提示
 
-- 门户 slug、文章页壳层：[`components/BlogPostPageView.tsx`](components/BlogPostPageView.tsx)  
+- 门户 slug、`page_id` 兜底：[`lib/blogPortal.ts`](lib/blogPortal.ts)  
+- 文章页壳层：[`components/BlogPostPageView.tsx`](components/BlogPostPageView.tsx)  
 - 拉取 Notion `recordMap`：[`lib/fetchNotionRecordMap.ts`](lib/fetchNotionRecordMap.ts)  
 - 分类与 slug 映射：[`lib/siteCategories.ts`](lib/siteCategories.ts)  
 - 本地文章列表（元数据）：[`lib/posts.js`](lib/posts.js) 中的 `getAllPosts()`  
