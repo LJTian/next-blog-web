@@ -13,6 +13,18 @@ const STATIC_POSTS = [
     pageId: "ce8a73f53641460cb4ba5f92596ae14b",
     published_at: null,
   },
+  {
+    title: "关于我",
+    slug: "about-me",
+    pageId: "0ce2fc2b4be744159b7083a53f9da3d9",
+    published_at: null,
+  },
+  {
+    title: "关于博客",
+    slug: "about-blog",
+    pageId: "8eb21be2f7e147a9a4703622664aabd5",
+    published_at: null,
+  },
 ];
 
 export function formatNotionId(id) {

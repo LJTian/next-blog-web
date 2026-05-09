@@ -30,7 +30,7 @@ export default function BlogIndexPage() {
         </div>
       ) : (
         <>
-          <h2 className="tb-feed-heading">Blog Posts</h2>
+          <h2 className="tb-feed-heading">分类</h2>
           <ul className="post-list">
             {posts.map((post) => (
               <li key={post.slug}>

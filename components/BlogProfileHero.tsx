@@ -8,6 +8,8 @@ export type BlogProfileHeroProps = {
   iconUrl?: string | null;
   iconEmoji?: string | null;
   title?: string;
+  /** 文章页：主标题放在头像正下方（与头图同一视觉块） */
+  headingTitle?: string | null;
 };
 
 function initialsFromTitle(name: string): string {
@@ -31,6 +33,7 @@ export function BlogProfileHero({
   iconUrl = null,
   iconEmoji = null,
   title = "LJTian Blog",
+  headingTitle = null,
 }: BlogProfileHeroProps) {
   const [coverBroken, setCoverBroken] = useState(false);
   const [iconBroken, setIconBroken] = useState(false);
@@ -40,8 +43,13 @@ export function BlogProfileHero({
   const showCover = Boolean(coverUrl && !coverBroken);
   const showIconImg = Boolean(iconUrl && !iconBroken);
 
+  const showHeading = Boolean(headingTitle?.trim());
+
   return (
-    <section className="blog-profile-hero" aria-label="站点">
+    <section
+      className={`blog-profile-hero${showHeading ? " blog-profile-hero--with-post-heading" : ""}`}
+      aria-label="站点"
+    >
       <div
         className={`blog-profile-banner${showCover ? " blog-profile-banner--cover" : ""}`}
         aria-hidden={showCover}
@@ -86,7 +94,11 @@ export function BlogProfileHero({
           </span>
         )}
       </div>
-      <p className="blog-profile-site-title">{title}</p>
+      {showHeading ? (
+        <h1 className="post-title blog-profile-post-title">
+          {headingTitle!.trim()}
+        </h1>
+      ) : null}
     </section>
   );
 }
