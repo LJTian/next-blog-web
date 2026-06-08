@@ -13,10 +13,6 @@ import {
 import { fetchNotionPageRecordMap } from "@/lib/fetchNotionRecordMap";
 import { getNotionPageHeroAssets } from "@/lib/notionPageHero";
 import { markdownToHtml } from "@/lib/markdown";
-import {
-  extractNotionLeadParagraph,
-  recordMapWithoutTopLevelBlock,
-} from "@/lib/notionLeadParagraph";
 import { getNotionPageIdToBlogHref } from "@/lib/notionPageLinks";
 import { getPostBySlug } from "@/lib/posts";
 import {
@@ -32,8 +28,6 @@ type ArticleChromeProps = {
   notionHero: ReturnType<typeof getNotionPageHeroAssets> | null;
   displayTitle: string;
   headingTitle: string;
-  showPostHeader: boolean;
-  notionLeadPlain: string | null;
   publishedAt: string | null | undefined;
   tocItems: NotionTocItem[];
   body: ReactNode;
@@ -43,8 +37,6 @@ function BlogPostArticleChrome({
   notionHero,
   displayTitle,
   headingTitle,
-  showPostHeader,
-  notionLeadPlain,
   publishedAt,
   tocItems,
   body,
@@ -60,21 +52,15 @@ function BlogPostArticleChrome({
       />
       <BlogPostTocLayout tocItems={tocItems}>
         <main className="blog-main blog-main-wide">
-          <article
-            className={`post-article${showPostHeader ? "" : " post-article--compact-top"}`}
-          >
-            {showPostHeader ? (
-              <header className="post-header">
-                {notionLeadPlain ? (
-                  <p className="post-lead-notion">{notionLeadPlain}</p>
-                ) : null}
-                {publishedAt ? (
-                  <p className="post-meta">
-                    <time dateTime={publishedAt}>{publishedAt}</time>
-                  </p>
-                ) : null}
-              </header>
-            ) : null}
+          <article className="post-article">
+            <header className="post-header">
+              {publishedAt ? (
+                <p className="post-meta">
+                  <time dateTime={publishedAt}>{publishedAt}</time>
+                </p>
+              ) : null}
+              <div className="post-header-divider" aria-hidden />
+            </header>
             {body}
           </article>
         </main>
@@ -147,13 +133,10 @@ export async function BlogNotionRecordPageView({
 }) {
   const notionHero = getNotionPageHeroAssets(recordMap, pageId);
   const pageUrlByNotionId = getNotionPageIdToBlogHref();
-  const notionLead = extractNotionLeadParagraph(recordMap, pageId);
-  const recordMapForBody = notionLead
-    ? recordMapWithoutTopLevelBlock(recordMap, pageId, notionLead.blockKey)
-    : recordMap;
+  const recordMapForBody = recordMap;
 
   const displayTitle = notionHero?.title ?? "文章";
-  const showPostHeader = Boolean(notionLead);
+  const showPostHeader = true;
   const tocItems = getNotionTocFromRecordMap(recordMapForBody, pageId);
 
   const body = (
@@ -171,8 +154,6 @@ export async function BlogNotionRecordPageView({
       notionHero={notionHero}
       displayTitle={displayTitle}
       headingTitle={displayTitle}
-      showPostHeader={showPostHeader}
-      notionLeadPlain={notionLead?.plainText ?? null}
       publishedAt={undefined}
       tocItems={tocItems}
       body={body}
@@ -227,23 +208,9 @@ export async function BlogPostPageView({ slug }: { slug: string }) {
 
   const pageUrlByNotionId = getNotionPageIdToBlogHref();
 
-  const notionLead =
-    usedNotion && recordMap && pageId && !category
-      ? extractNotionLeadParagraph(recordMap, pageId)
-      : null;
-  const recordMapForBody =
-    usedNotion && recordMap && pageId && notionLead
-      ? recordMapWithoutTopLevelBlock(
-          recordMap,
-          pageId,
-          notionLead.blockKey,
-        )
-      : recordMap;
+  const recordMapForBody = recordMap;
 
   const displayTitle = category?.title ?? data?.title ?? slug;
-  const showPostHeader = Boolean(
-    (!category && notionLead) || data?.published_at,
-  );
 
   const tocItems =
     usedNotion && recordMapForBody && pageId
@@ -275,8 +242,6 @@ export async function BlogPostPageView({ slug }: { slug: string }) {
       notionHero={notionHero}
       displayTitle={displayTitle}
       headingTitle={displayTitle}
-      showPostHeader={showPostHeader}
-      notionLeadPlain={notionLead?.plainText ?? null}
       publishedAt={data?.published_at}
       tocItems={tocItems}
       body={body}

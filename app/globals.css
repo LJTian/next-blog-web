@@ -713,8 +713,12 @@ a {
   display: flex;
   flex-direction: column;
   align-items: stretch;
-  padding-bottom: 0.55rem;
   margin-bottom: 0.65rem;
+}
+
+.blog-post-page .post-header-divider {
+  border-bottom: 1px solid var(--line);
+  margin-top: 0.55rem;
 }
 
 .blog-post-page .blog-profile-post-title {
@@ -733,33 +737,6 @@ a {
 .blog-post-page .post-meta {
   font-size: 15px;
   letter-spacing: 0.01em;
-}
-
-/* Notion 首段导语：标题与分割线之间（纯文本，与正文不重复） */
-.post-lead-notion {
-  margin: 0.5rem auto 0;
-  max-width: 36em;
-  font-size: 1.05rem;
-  line-height: 1.65;
-  color: var(--text-secondary);
-  text-align: left;
-}
-
-.blog-post-page .post-lead-notion {
-  /* 与下方 Notion 正文同宽左对齐，避免窄条居中造成「歪」 */
-  margin: 0.35rem 0 0;
-  width: 100%;
-  max-width: none;
-  box-sizing: border-box;
-  text-align: left;
-}
-
-.blog-post-page .post-header .post-lead-notion:first-child {
-  margin-top: 0;
-}
-
-.blog-post-page .post-header .post-lead-notion + .post-meta {
-  margin-top: 0.85rem;
 }
 
 /* ——— 顶栏（保留类名供将来启用站点导航时复用） ——— */
@@ -1166,10 +1143,6 @@ a {
 
 .tb-site .blog-post-page .post-article {
   padding-top: clamp(6px, 1.5vw, 14px);
-}
-
-.tb-site .blog-post-page .post-article.post-article--compact-top {
-  padding-top: 0;
 }
 
 .blog-post-page .notion-blog-root {
