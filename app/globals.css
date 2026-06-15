@@ -671,6 +671,19 @@ a {
   line-height: 0;
 }
 
+.blog-home-fab-label,
+.blog-home-fab-caret {
+  display: none;
+}
+
+.blog-home-fab-caret {
+  transition: transform 0.16s ease;
+}
+
+.blog-home-fab-wrap--open .blog-home-fab-caret {
+  transform: rotate(180deg);
+}
+
 /* 锚点跳转时预留偏移（无固定顶栏时略留空即可） */
 .blog-post-page .notion-h {
   scroll-margin-top: 1rem;
@@ -705,6 +718,56 @@ a {
 
   .blog-toc-aside {
     display: none;
+  }
+}
+
+@media (max-width: 640px) {
+  .blog-home-fab-wrap {
+    left: max(12px, calc(12px + env(safe-area-inset-left, 0px)));
+    right: max(12px, calc(12px + env(safe-area-inset-right, 0px)));
+    bottom: max(10px, calc(10px + env(safe-area-inset-bottom, 0px)));
+    align-items: stretch;
+    gap: 10px;
+  }
+
+  .blog-home-fab-panel {
+    min-width: 0;
+    max-width: none;
+    width: 100%;
+    max-height: min(52vh, 420px);
+    padding: 10px 10px 12px;
+    border: 1px solid var(--line);
+    border-radius: 18px 18px 22px 22px;
+    background: var(--surface-elevated);
+    box-shadow: var(--shadow-lg);
+  }
+
+  .blog-home-fab {
+    width: 100%;
+    height: 52px;
+    justify-content: space-between;
+    padding: 0 14px 0 16px;
+    border-radius: 999px;
+  }
+
+  .blog-home-fab-icon {
+    flex: 0 0 auto;
+  }
+
+  .blog-home-fab-label {
+    display: inline-flex;
+    flex: 1 1 auto;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.96rem;
+    font-weight: 650;
+    letter-spacing: -0.01em;
+  }
+
+  .blog-home-fab-caret {
+    display: inline-flex;
+    flex: 0 0 auto;
+    opacity: 0.82;
   }
 }
 
