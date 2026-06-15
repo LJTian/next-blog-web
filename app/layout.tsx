@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { DM_Sans, JetBrains_Mono, Source_Serif_4 } from "next/font/google";
 
+import { SiteTopbar } from "@/components/SiteTopbar";
 import "./globals.css";
 import "react-notion-x/styles.css";
 /* Notion Code 使用 Prism；浅色主题与站点 Notion 风一致（勿用 tomorrow 配浅色底） */
@@ -45,6 +46,7 @@ export default function RootLayout({
         suppressHydrationWarning
       >
         {children}
+        <SiteTopbar />
       </body>
     </html>
   );
