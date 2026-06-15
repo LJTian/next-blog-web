@@ -48,6 +48,7 @@ export function BlogHomeFab({ categories }: Props) {
   const onTriggerClick = useCallback((e: MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
     e.stopPropagation();
+    setHover(false);
     setTapOpen((v) => !v);
   }, []);
 
@@ -68,7 +69,7 @@ export function BlogHomeFab({ categories }: Props) {
         type="button"
         className="blog-home-fab"
         id="blog-home-fab-trigger"
-        aria-label="日志分类与返回首页"
+        aria-label={open ? "收起日志分类与返回首页" : "展开日志分类与返回首页"}
         aria-expanded={open}
         aria-controls="blog-home-fab-menu"
         aria-haspopup="true"
