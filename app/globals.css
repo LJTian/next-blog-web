@@ -262,17 +262,23 @@ a {
 }
 
 .blog-post-page .notion-blog-themed .notion-text {
-  margin-top: 0.62em;
-  margin-bottom: 0.62em;
+  margin-top: 0.42em;
+  margin-bottom: 0.42em;
 }
 
 .blog-post-page .notion-blog-themed .notion-text:first-child {
   margin-top: 0;
 }
 
-.blog-post-page .notion-blog-themed ul.notion-list {
-  margin-top: 0.35em;
-  margin-bottom: 0.55em;
+.blog-post-page .notion-blog-themed ul.notion-list,
+.blog-post-page .notion-blog-themed ol.notion-list {
+  margin-top: 0.2em;
+  margin-bottom: 0.35em;
+}
+
+.blog-post-page .notion-blog-themed .notion-list li {
+  padding-top: 3px;
+  padding-bottom: 3px;
 }
 
 /* ——— 单篇文章页：贴近 TB / Notion 博文（宽封面 + 窄正文栏） ——— */
@@ -1405,7 +1411,7 @@ a {
   /* react-notion-x 默认 720px，放宽为占满文章卡片宽度 */
   --notion-max-width: 100%;
   font-size: 1rem;
-  line-height: 1.75;
+  line-height: 1.62;
 }
 
 .notion-blog-themed .notion-link {
