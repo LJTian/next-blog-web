@@ -1,0 +1,10 @@
+name = "notion-api-proxy"
+main = "src/index.js"
+compatibility_date = "2026-08-10"
+
+# 部署后 workers.dev 地址形如：
+#   https://notion-api-proxy.<subdomain>.workers.dev
+# Vercel 环境变量填（无末尾斜杠）：
+#   NOTION_API_BASE_URL=https://notion-api-proxy.<subdomain>.workers.dev/api/v3
+#
+# 可选：在 Cloudflare Dashboard 给该 Worker 绑定自定义域，例如 notion-api.ljtian.com

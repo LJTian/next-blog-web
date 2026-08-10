@@ -52,8 +52,9 @@ async function fetchNotionPageRecordMapUncached(pageId: string): Promise<{
     applyNotionCollectionTitleOverrides(recordMap);
     return { recordMap, source: "public-notion-client" };
   } catch (e) {
+    const msg = e instanceof Error ? e.message : String(e);
     notionDevWarn(
-      `[notion] public NotionAPI.getPage failed (页面是否已「发布到网页」？).${notionPublicApiFailHint(e)}`,
+      `[notion] public NotionAPI.getPage failed (页面是否已「发布到网页」？).${notionPublicApiFailHint(e)} ${msg}`,
       e,
     );
   }
@@ -63,6 +64,25 @@ async function fetchNotionPageRecordMapUncached(pageId: string): Promise<{
 
   const recordMap = await compat.getPage(pageId);
   applyNotionCollectionTitleOverrides(recordMap);
+
+  // official-compat 常拿不到嵌入 database；避免把「空画廊」当成功结果长期 ISR 缓存
+  const hasCollectionData =
+    Object.keys(recordMap.collection ?? {}).length > 0 ||
+    Object.keys(recordMap.collection_query ?? {}).length > 0;
+  if (!hasCollectionData) {
+    const serialized = JSON.stringify(recordMap);
+    const expectsCollection =
+      serialized.includes("child_database") ||
+      serialized.includes("collection_view") ||
+      serialized.includes('"type":"collection"');
+    if (expectsCollection) {
+      notionDevWarn(
+        "[notion] official-compat returned page without collection data; refusing incomplete fallback",
+      );
+      return null;
+    }
+  }
+
   return { recordMap, source: "official-compat" };
 }
 
