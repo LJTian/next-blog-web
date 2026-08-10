@@ -55,7 +55,7 @@ npm run dev
 | 变量 | 用途 |
 |------|------|
 | `NOTION_API_KEY` | 同步脚本；公开 Notion 接口不可用时的渲染兜底（勿使用 `NEXT_PUBLIC_` 前缀） |
-| `NOTION_API_BASE_URL` | 可选：匿名 Notion 接口的代理基地址 |
+| `NOTION_API_BASE_URL` | 可选：匿名 Notion 接口的代理基地址（本仓库 Worker：`https://notion-api-proxy.ljtian.workers.dev/api/v3`，见 [`workers/notion-api-proxy`](workers/notion-api-proxy)） |
 | `NOTION_POSTS_DATA_SOURCE_ID` 与 `NOTION_PROP_*` | 可选：用数据源驱动同步列表（详见 [`scripts/sync-notion.mjs`](scripts/sync-notion.mjs)） |
 | `NOTION_LOG` / `NEXT_PUBLIC_NOTION_LOG` | 设为 `quiet`、`0` 或 `false` 可减少服务端或浏览器侧部分日志 |
 | `NEXT_DEV_ALLOWED_ORIGINS` | 用局域网 IP 访问开发服务器时，在此填写 hostname（多个用逗号或空格），与 `next.config.mjs` 中的 `allowedDevOrigins` 配合 |
