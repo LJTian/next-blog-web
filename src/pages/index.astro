@@ -1,0 +1,53 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { getCollection } from 'astro:content';
+
+const allPosts = await getCollection('posts');
+const sortedPosts = allPosts
+  .sort((a, b) => new Date(b.data.date).getTime() - new Date(a.data.date).getTime())
+  .slice(0, 5);
+
+const formatDate = (dateString: string) => {
+  const date = new Date(dateString);
+  return date.toLocaleDateString('zh-CN', { 
+    year: 'numeric', 
+    month: 'long', 
+    day: 'numeric' 
+  });
+};
+---
+
+<BaseLayout title="LJTian - 技术博客">
+  <div class="space-y-12">
+    <p style="color: var(--color-text);" class="text-lg">
+      云原生工程师,专注于 Kubernetes 和开源技术
+    </p>
+
+    <section class="space-y-8">
+      {sortedPosts.map((post, index) => (
+        <>
+          {index > 0 && (
+            <hr style="border-color: var(--color-hairline);" class="border-t" />
+          )}
+          <article class="space-y-2">
+            <h2 class="text-xl font-semibold">
+              <a href={`/posts/${post.slug}`} style="color: var(--color-text);">
+                {post.data.title}
+              </a>
+            </h2>
+            <time style="color: var(--color-muted);" class="text-base">
+              {formatDate(post.data.date)}
+            </time>
+            <p style="color: var(--color-text);">
+              {post.data.description}
+            </p>
+          </article>
+        </>
+      ))}
+    </section>
+
+    <div>
+      <a href="/posts" class="inline-block">查看全部文章 →</a>
+    </div>
+  </div>
+</BaseLayout>

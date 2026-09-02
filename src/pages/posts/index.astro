@@ -1,0 +1,63 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { getCollection } from 'astro:content';
+
+const allPosts = await getCollection('posts');
+const sortedPosts = allPosts.sort(
+  (a, b) => new Date(b.data.date).getTime() - new Date(a.data.date).getTime()
+);
+
+const formatDate = (dateString: string) => {
+  const date = new Date(dateString);
+  return date.toLocaleDateString('zh-CN', { 
+    year: 'numeric', 
+    month: 'long', 
+    day: 'numeric' 
+  });
+};
+---
+
+<BaseLayout title="文章 - LJTian" description="技术文章列表">
+  <div class="space-y-8">
+    <h1 class="text-2xl font-semibold" style="color: var(--color-text);">文章</h1>
+    
+    {sortedPosts.length === 0 ? (
+      <p style="color: var(--color-muted);">暂无文章</p>
+    ) : (
+      <div class="space-y-8">
+        {sortedPosts.map((post, index) => (
+          <>
+            {index > 0 && (
+              <hr style="border-color: var(--color-hairline);" class="border-t" />
+            )}
+            <article class="space-y-2">
+              <h2 class="text-xl font-semibold">
+                <a href={`/posts/${post.slug}`} style="color: var(--color-text);">
+                  {post.data.title}
+                </a>
+              </h2>
+              <time style="color: var(--color-muted);" class="text-base">
+                {formatDate(post.data.date)}
+              </time>
+              <p style="color: var(--color-text);">
+                {post.data.description}
+              </p>
+              {post.data.tags && post.data.tags.length > 0 && (
+                <div class="flex gap-2 flex-wrap">
+                  {post.data.tags.map((tag) => (
+                    <span 
+                      style="color: var(--color-muted); font-size: 0.875rem;"
+                      class="inline-block"
+                    >
+                      #{tag}
+                    </span>
+                  ))}
+                </div>
+              )}
+            </article>
+          </>
+        ))}
+      </div>
+    )}
+  </div>
+</BaseLayout>

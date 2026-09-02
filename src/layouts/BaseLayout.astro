@@ -1,0 +1,58 @@
+---
+import '../styles/global.css';
+
+interface Props {
+  title: string;
+  description?: string;
+}
+
+const { title, description = 'LJTian 的技术博客' } = Astro.props;
+---
+
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content={description} />
+    <title>{title}</title>
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+  </head>
+  <body class="min-h-screen flex flex-col">
+    <header class="border-b" style="border-color: var(--color-hairline);">
+      <nav class="max-w-4xl mx-auto px-4 py-6">
+        <div class="flex items-center justify-between">
+          <div class="flex items-center gap-8">
+            <a href="/" class="font-semibold" style="color: var(--color-text);">LJTian</a>
+            <ul class="flex gap-6">
+              <li><a href="/" class:list={[Astro.url.pathname === '/' && 'text-accent']}>首页</a></li>
+              <li><a href="/posts" class:list={[Astro.url.pathname.startsWith('/posts') && 'text-accent']}>文章</a></li>
+              <li><a href="/about" class:list={[Astro.url.pathname === '/about' && 'text-accent']}>关于</a></li>
+            </ul>
+          </div>
+          <a 
+            href="https://github.com/LJTian" 
+            target="_blank" 
+            rel="noopener noreferrer"
+          >
+            GitHub
+          </a>
+        </div>
+      </nav>
+    </header>
+
+    <main class="flex-1 max-w-4xl mx-auto px-4 py-12 w-full">
+      <slot />
+    </main>
+
+    <footer class="border-t mt-auto" style="border-color: var(--color-hairline);">
+      <div class="max-w-4xl mx-auto px-4 py-8" style="color: var(--color-muted);">
+        <div class="flex gap-4">
+          <a href="https://github.com/LJTian" target="_blank" rel="noopener noreferrer">GitHub</a>
+          <span>·</span>
+          <a href="mailto:tianlijun315@gmail.com">tianlijun315@gmail.com</a>
+        </div>
+      </div>
+    </footer>
+  </body>
+</html>
